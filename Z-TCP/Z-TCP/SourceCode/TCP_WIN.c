@@ -94,7 +94,7 @@ void TCPWin_AckNormal(TCP_Win * pTCP_Win,uint32_t Sn)
 		prvTCPWin_DelSegment(pSegment_Wait);
 	}
 }
-
+/* 添加数据到窗体 */
 void TCPWin_AddTxData(TCP_Win * pTCP_Win, uint8_t * Data, uint32_t Len)
 {
 	uint8_t * Buff = 0;
@@ -114,15 +114,50 @@ void TCPWin_AddTxData(TCP_Win * pTCP_Win, uint8_t * Data, uint32_t Len)
 	}
 }
 
-void TCPWin_SendData(Socket * pSocket)
+Segment * TCPWin_GetDataLenFromSegmentHeader(Segment * pSegmentHead,uint8_t ** Data,uint32_t * Len)
 {
-	TCP_Win * pTCP_Win = pSocket->pTCP_Control->pTCP_Win;
-	uint32_t SegmentWaitCounter = prvTCPWin_GetCount(pSocket->pTCP_Control->pSegment_Wait);
-	uint32_t SegmentWin = pTCP_Win->TxCapacity / pTCP_Win->MSS;
+	if (pSegmentHead->Next)
+	{
+		if (Data)*Data = pSegmentHead->Next->Buff;
+		if (Len)*Len = pSegmentHead->Next->Len;
+		return pSegmentHead->Next;
+	}
+	if (Data)*Data = 0;
+	if (Len)*Len = 0;
+	return NULL;
+}
 
+void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_t Peek)
+{
+	/* 等待应答组 */
+	uint32_t SegmentWaitCounter = prvTCPWin_GetCount(pTCP_Win->pSegment_Wait);
+	/* 窗体宽度 */
+	uint32_t SegmentWin = pTCP_Win->TxCapacity / pTCP_Win->MSS;
+	Segment * pSegment = 0;
+	/* 还可继续发送数据 */
 	if (SegmentWin > SegmentWaitCounter)
 	{
-		prvTCP_GeneratePacket();
+		/* 存在优先组 */
+		if (pTCP_Win->pSegment_Pri)
+		{
+			pSegment = TCPWin_GetDataLenFromSegmentHeader(pTCP_Win->pSegment_Pri,Data,Len);
+			/* 从优先组移至等待组 */
+			if (!Peek && pSegment)
+			{
+				prvTCPWin_DelSegmentFrom(pTCP_Win->pSegment_Pri, pSegment);
+				prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Wait, pSegment);
+			}
+		}
+		else
+		{
+			pSegment = TCPWin_GetDataLenFromSegmentHeader(pTCP_Win->pSegment_Tx, Data, Len);
+			/* 从TX组移至等待组 */
+			if (!Peek && pSegment)
+			{
+				prvTCPWin_DelSegmentFrom(pTCP_Win->pSegment_Tx, pSegment);
+				prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Wait, pSegment);
+			}
+		}
 	}
 }
 
