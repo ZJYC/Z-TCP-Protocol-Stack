@@ -37,6 +37,7 @@ extern "C" {
 		uint8_t * RxBuff;
 		uint32_t RxCapacity;
 		uint32_t RxBuffLen;
+		uint32_t RxStreamBeginSN;/* 一次数据流开始的SN号 */
 	}TCP_Win;
 
 

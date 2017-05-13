@@ -160,9 +160,44 @@ void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_
 		}
 	}
 }
+/* 把接受的数据保存在窗体 */
+void TCPWin_AddRxData(TCP_Win * pTCP_Win, uint8_t * RxData, uint32_t RxLen,uint32_t Sn)
+{
+	Segment * pSegment = 0;
 
+	if (pTCP_Win->RxStreamBeginSN)
+	{
+		/* 数据流进行中 */
+		uint8_t * StorageLocate = (uint8_t *)(pTCP_Win->RxBuff + (Sn - pTCP_Win->RxStreamBeginSN));
+		memcpy(StorageLocate, RxData, RxLen);
+		pSegment = prvTCPWin_NewSegment(StorageLocate, RxLen, Sn);
+		prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Rx, pSegment);
+		/* 记录接受数据长度 */
+		pTCP_Win->RxBuffLen = RxLen;
+	}
+	else
+	{
+		/* 还没有数据流 */
+		pTCP_Win->RxStreamBeginSN = Sn;
+		/* 复制数据到缓冲区 */
+		memcpy(pTCP_Win->RxBuff,RxData,RxLen);
+		/* 创建控制块 */
+		pSegment = prvTCPWin_NewSegment(pTCP_Win->RxBuff, RxLen, Sn);
+		prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Rx,pSegment);
+		/* 记录接受数据长度 */
+		pTCP_Win->RxBuffLen = RxLen;
+	}
+}
 
+void TCPWin_RxHasHole(TCP_Win * pTCP_Win)
+{
+	Segment * pSegmentHeader = pTCP_Win->pSegment_Rx;
+	Segment * pSegmentFirst = pSegmentHeader->Next;
+	if (pSegmentFirst)
+	{
 
+	}
+}
 
 
 
