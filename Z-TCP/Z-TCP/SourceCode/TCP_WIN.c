@@ -75,7 +75,7 @@ TCP_Win * prvTCPWin_NewWindows(uint32_t WinSizeRx, uint32_t WinSizeTx)
 
 }
 
-static Segment * prvTCPWin_FindSnEnd(Segment * pSegment,uint32_t Sn)
+static Segment * prvTCPWin_FindSnEndFromHeader(Segment * pSegment,uint32_t Sn)
 {
 	while (pSegment->Next)
 	{
@@ -83,6 +83,83 @@ static Segment * prvTCPWin_FindSnEnd(Segment * pSegment,uint32_t Sn)
 		pSegment = pSegment->Next;
 	}
 	return NULL;
+}
+
+static Segment * prvTCPWin_FindSnStartFromHeader(Segment * pSegment, uint32_t Sn)
+{
+	while (pSegment->Next)
+	{
+		if (pSegment->SnStart == Sn)return pSegment;
+		pSegment = pSegment->Next;
+	}
+	return NULL;
+}
+
+static Segment * prvTCPWin_FindMaxSnStartFromHeader(Segment * pSegment)
+{
+	uint32_t MaxSn = 0x00;
+	Segment * pSegmentMaxSn = 0x00;
+
+	pSegment = pSegment->Next;
+
+	while (pSegment)
+	{
+		if (pSegment->SnStart > MaxSn)
+		{
+			MaxSn = pSegment->SnStart;
+			pSegmentMaxSn = pSegment;
+		}
+		pSegment = pSegment->Next;
+	}
+	return pSegmentMaxSn;
+}
+
+static Segment * prvTCPWin_FindMinSnStartFromHeader(Segment * pSegment)
+{
+	uint32_t MaxSn = 0xffffffff;
+	Segment * pSegmentMaxSn = 0x00;
+
+	pSegment = pSegment->Next;
+
+	while (pSegment)
+	{
+		if (pSegment->SnStart < MaxSn)
+		{
+			MaxSn = pSegment->SnStart;
+			pSegmentMaxSn = pSegment;
+		}
+		pSegment = pSegment->Next;
+	}
+	return pSegmentMaxSn;
+}
+
+static Segment * prvTCPWin_FindSnLessThanStartFromHeader(Segment * pSegment, uint32_t Sn)
+{
+	while (pSegment->Next)
+	{
+		if (pSegment->SnStart <= Sn)return pSegment;
+		pSegment = pSegment->Next;
+	}
+	return NULL;
+}
+
+static Segment * prvTCPWin_FindMinSnNotLessThanStartFromHeader(Segment * pSegment, uint32_t Sn)
+{
+	uint32_t MaxSn = 0xffffffff;
+	Segment * pSegmentMaxSn = 0x00;
+
+	pSegment = pSegment->Next;
+
+	while (pSegment)
+	{
+		if (pSegment->SnStart < MaxSn && pSegment->SnStart > Sn)
+		{
+			MaxSn = pSegment->SnStart;
+			pSegmentMaxSn = pSegment;
+		}
+		pSegment = pSegment->Next;
+	}
+	return pSegmentMaxSn;
 }
 
 void TCPWin_AckNormal(TCP_Win * pTCP_Win,uint32_t Sn)
@@ -189,17 +266,49 @@ void TCPWin_AddRxData(TCP_Win * pTCP_Win, uint8_t * RxData, uint32_t RxLen,uint3
 	}
 }
 
-void TCPWin_RxHasHole(TCP_Win * pTCP_Win)
+void TCPWin_RxHasHole(TCP_Win * pTCP_Win,uint32_t **SACK,uint32_t *SACKLen)
 {
 	Segment * pSegmentHeader = pTCP_Win->pSegment_Rx;
 	Segment * pSegmentFirst = pSegmentHeader->Next;
+	Segment * pSegmentTemp = 0;
+	Segment * MaxSnSegment = prvTCPWin_FindMaxSnStartFromHeader(pSegmentHeader);
+	Segment * MinSnSegment = prvTCPWin_FindMinSnStartFromHeader(pSegmentHeader);
+	uint32_t SackIndex = 0, MaxSn = MaxSnSegment->SnStart, MinSn = MinSnSegment->SnStart, TempSn = MinSn;
+
 	if (pSegmentFirst)
 	{
-
+		pSegmentTemp = prvTCPWin_FindSnStartFromHeader(pSegmentHeader, TempSn);
+		if (pSegmentTemp)
+		{
+			TempSn = pSegmentTemp->SnEnd;
+			if (SackIndex % 2 == 1 && SACK)*SACK[SackIndex++] = TempSn;
+		}
+		else
+		{
+			if (SackIndex % 2 == 0 && SACK)*SACK[SackIndex++] = TempSn;
+			pSegmentTemp = prvTCPWin_FindMinSnNotLessThanStartFromHeader(pSegmentHeader, TempSn);
+			TempSn = pSegmentTemp->SnStart;
+		}
 	}
+	if (SACKLen)*SACKLen = SackIndex;
 }
 
+void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * DataLen)
+{
+	uint32_t SACK[100] = 0;
+	Segment * pSegmentHeader = pTCP_Win->pSegment_Rx;
+	Segment * MinSnSegment = prvTCPWin_FindMinSnStartFromHeader(pSegmentHeader);
+	uint32_t MinSn = MinSnSegment->SnStart;
 
+	TCPWin_RxHasHole(pTCP_Win, &SACK,0);
+	
+	if (SACK[0] > MinSn)
+	{
+		memcpy(*Data, MinSnSegment->Buff, (SACK[0] - MinSn));
+		*DataLen = SACK[0] - MinSn;
+	}
+
+}
 
 
 
