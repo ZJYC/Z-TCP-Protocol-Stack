@@ -65,7 +65,7 @@ void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 
 	if (pNeteorkBuff == NULL)return RES_False;
 
-	pEth_Header = (Ethernet_Header*)pNeteorkBuff->Buff;;
+	pEth_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;;
 	/* 硬件自动计算CRC */
 	if (prvEthernetFilter(pNeteorkBuff) == RES_EthernetPacketPass)
 	{
@@ -82,7 +82,7 @@ void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 
 static RES prvEthernetFilter(NeteworkBuff * pNeteorkBuff)
 {
-	Ethernet_Header * pEth_Header = (Ethernet_Header*)pNeteorkBuff->Buff;
+	Ethernet_Header * pEth_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
 
 	if (memcmp((uint8_t*)&pEth_Header->DstMAC,(uint8_t*)&LocalMAC,sizeof(MAC)) == 0)
 	{

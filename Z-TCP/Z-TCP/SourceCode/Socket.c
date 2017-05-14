@@ -37,7 +37,7 @@ Socket * prvSocket_New(ADDR * pADDR,uint8_t Procotol)
 	Socket * pSocketNew = 0;
 
 	if (pADDR == NULL)return NULL;
-	if (pADDR->RemoteIP.U32 == 0 || pADDR->RemotePort == 0)return NULL;
+	//if (pADDR->RemoteIP.U32 == 0 || pADDR->RemotePort == 0)return NULL;
 	if (pADDR->LocalPort == NULL)pADDR->LocalPort = prvSocket_GetRandomPortNum();
 	pADDR->LocalIP.U32 = LocalIP.U32;
 
@@ -83,7 +83,7 @@ void Socket_Connect(Socket * pSocket)
 	if (pSocket->Procotol == IP_Protocol_TCP)
 	{
 		TCP_Control * pTCP_Control = pSocket->pTCP_Control;
-		TCP_Connect(pTCP_Control);
+		//TCP_Connect(pTCP_Control);
 	}
 }
 

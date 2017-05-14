@@ -109,11 +109,19 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 
 	if (prvIP_PreProcessPacket(pIP_Header) == IP_PacketPass)
 	{
+		if (pIP_Header->U_TP.S_TP_ALL.Protocol != IP_Protocol_UDP)
+		{
+			ARP_AddItem(&pIP_Header->SrcIP, &pEth_Header->SrcMAC);
+		}
 		switch (pIP_Header->U_TP.S_TP_ALL.Protocol)
 		{
 			case IP_Protocol_ICMP:/*ICMP_ProcessPacket(pNeteworkBuff); */break;
 			case IP_Protocol_IGMP:/*IGMP_ProcessPacket(pNeteworkBuff); */break;
-			case IP_Protocol_TCP:/*TCP_ProcessPacket(pNeteworkBuff); */break;
+			case IP_Protocol_TCP:
+			{
+				TCP_ProcessPacket(pNeteorkBuff);
+				break;
+			}
 			case IP_Protocol_UDP:
 			{
 				UDP_ProcessPacket(pNeteorkBuff); break;

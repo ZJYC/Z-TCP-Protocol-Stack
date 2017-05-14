@@ -164,7 +164,7 @@ static Segment * prvTCPWin_FindMinSnNotLessThanStartFromHeader(Segment * pSegmen
 
 void TCPWin_AckNormal(TCP_Win * pTCP_Win,uint32_t Sn)
 {
-	Segment * pSegment_Wait = prvTCPWin_FindSnEnd(pTCP_Win->pSegment_Wait, Sn);
+	Segment * pSegment_Wait = prvTCPWin_FindSnEndFromHeader(pTCP_Win->pSegment_Wait, Sn);
 	if (pSegment_Wait)
 	{
 		prvTCPWin_DelSegmentFrom(pTCP_Win->pSegment_Wait, pSegment_Wait);
@@ -295,7 +295,7 @@ void TCPWin_RxHasHole(TCP_Win * pTCP_Win,uint32_t **SACK,uint32_t *SACKLen)
 
 void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * DataLen)
 {
-	uint32_t SACK[100] = 0;
+	uint32_t SACK[100] = { 0 };
 	Segment * pSegmentHeader = pTCP_Win->pSegment_Rx;
 	Segment * MinSnSegment = prvTCPWin_FindMinSnStartFromHeader(pSegmentHeader);
 	uint32_t MinSn = MinSnSegment->SnStart;

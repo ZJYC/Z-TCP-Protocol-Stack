@@ -25,11 +25,11 @@ void Init(void)
 int main(void)
 {
 	//uint8_t Data[] = "1234567890";
-	//Init();
+	Init();
 	//Socket * pSocket = prvSocket_New(&Address, IP_Protocol_UDP);
 	//Socket_Send(pSocket,Data, 10);
-	//while (1)MainLoop();
 	TCP_Test();
+	while (1)MainLoop();
 }
 
 
