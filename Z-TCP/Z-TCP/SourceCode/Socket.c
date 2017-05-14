@@ -64,6 +64,9 @@ Socket * prvSocket_New(ADDR * pADDR,uint8_t Procotol)
 			pSocketNew->pTCP_Control->LocalPort = pSocketNew->addr.LocalPort;
 			pSocketNew->pTCP_Control->RemotePort = pSocketNew->addr.RemotePort;
 			pSocketNew->pTCP_Control->RemoteIP.U32 = pSocketNew->addr.RemoteIP.U32;
+			pSocketNew->pTCP_Control->LocalMSS = 10;
+			pSocketNew->pTCP_Control->LocalWinSize = 90;
+			pSocketNew->pTCP_Control->LocalWinScale = 0;
 		}
 	}
 	return pSocketNew;

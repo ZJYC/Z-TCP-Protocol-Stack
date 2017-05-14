@@ -76,9 +76,7 @@ void prvUDP_FillPacket(NeteworkBuff * pNeteorkBuff, IP * RemoteIP,uint16_t DstPo
 	pUDP_Header->CheckSum = prvUDP_GetCheckSum((uint16_t*)PseudoHeader,12,(uint16_t*)pUDP_Header, PayloadLen);
 	pUDP_Header->CheckSum = DIY_htons(pUDP_Header->CheckSum);
 	/* IP */
-	pIP_Header->TotalLen = IP_HeaderLen + DIY_htons(pUDP_Header->DataLen);
-	pIP_Header->TotalLen = DIY_htons(pIP_Header->TotalLen);
-	prvIP_FillPacket(pNeteorkBuff, RemoteIP,IP_Protocol_UDP);
+	prvIP_FillPacket(pNeteorkBuff, RemoteIP, IP_Protocol_UDP, IP_HeaderLen + DIY_htons(pUDP_Header->DataLen));
 }
 
 void UDP_ProcessPacket(NeteworkBuff * pNeteorkBuff)

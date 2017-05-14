@@ -111,7 +111,9 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 	{
 		if (pIP_Header->U_TP.S_TP_ALL.Protocol != IP_Protocol_UDP)
 		{
-			ARP_AddItem(&pIP_Header->SrcIP, &pEth_Header->SrcMAC);
+			IP ip = {0};
+			ip.U32 = DIY_ntohl(pIP_Header->SrcIP.U32);
+			ARP_AddItem(&ip, &pEth_Header->SrcMAC);
 		}
 		switch (pIP_Header->U_TP.S_TP_ALL.Protocol)
 		{
@@ -143,7 +145,7 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 					Just a simple successful implement,Will add new feature in the future.
 *****************************************************
 */
-void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protocol)
+void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protocol,uint32_t IpDataLen)
 {
 	Ethernet_Header * pEthernet_Header = (Ethernet_Header*)&pNeteworkBuff->Buff;
 	IP_Header * pIP_Header = (IP_Header*)&pEthernet_Header->Buff;
@@ -164,6 +166,7 @@ void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protoc
 	pIP_Header->U_TP.S_TP_ALL.Protocol = Protocol;
 	pIP_Header->DstIP.U32 = RemoteIP->U32;
 	pIP_Header->SrcIP.U32 = LocalIP.U32;
+	pIP_Header->TotalLen = DIY_ntohs(IpDataLen + IP_HeaderLen + IP_GetOptionSize());
 
 	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
 	pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
