@@ -32,6 +32,22 @@ static uint16_t prvUDP_GetCheckSum(uint16_t*PseudoHeader, uint16_t PseudoLenByte
 	return (uint16_t)(~cksum);
 }
 
+static uint16_t prvUDP_ChecksumCalculate(IP_Header * pIP_Header)
+{
+	UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
+	uint32_t PseudoHeader[3] = { 0x00 };
+	uint16_t PayloadLen = 0, CheckSum = 0, CheckTemp = 0;
+	CheckSum = DIY_ntohs(pUDP_Header->CheckSum);
+	pUDP_Header->CheckSum = 0;
+	PayloadLen = DIY_ntohs(pUDP_Header->DataLen);
+	PseudoHeader[0] = pIP_Header->SrcIP.U32;
+	PseudoHeader[1] = pIP_Header->DstIP.U32;
+	PseudoHeader[2] = IP_Protocol_UDP << 16 | PayloadLen;
+	PseudoHeader[2] = DIY_ntohl(PseudoHeader[2]);
+	CheckTemp = prvUDP_GetCheckSum((uint16_t*)PseudoHeader, 12, (uint16_t*)pUDP_Header, PayloadLen);
+	return CheckTemp;
+}
+
 static RES UDP_PreProcessPacket(NeteworkBuff * pNeteorkBuff)
 {
 	Ethernet_Header * pEthernet_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
