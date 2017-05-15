@@ -33,39 +33,20 @@ extern "C" {
 
 #define IP_TTL_MAX			64
 
+#define IP_GetVersion(x)	(x >> 4)
+#define IP_GetHeaderLen(x)	((x & 0x0f)*4)
+#define IP_SetHeaderLenVersion(H,V)	((H)/4 | (V) << 4)
+
 #pragma pack (1)
 typedef struct IP_Header_
 {
-	union U_VL_
-	{
-		uint8_t U_VL_ALL;
-		struct S_VL_ALL_
-		{
-			uint8_t Version : 4;
-			uint8_t HeaderLen : 4;
-		}S_VL_ALL;
-	}U_VL;
+	uint8_t VL;
 	uint8_t TOS;
 	uint16_t TotalLen;
 	uint16_t Identify;
-	union U_FO_
-	{
-		uint16_t U_FO_ALL;
-		struct S_FO_ALL_
-		{
-			uint16_t Flags : 3;
-			uint16_t Offset : 13;
-		}S_FO_ALL;
-	}U_FO;
-	union U_TP_
-	{
-		uint16_t U_TP_ALL;
-		struct S_TP_ALL_
-		{
-			uint16_t Protocol : 8;
-			uint16_t TTL : 8;
-		}S_TP_ALL;
-	}U_TP;
+	uint16_t FO;
+	uint8_t TTL;
+	uint8_t Protocol;
 	uint16_t CheckSum;
 	IP SrcIP;
 	IP DstIP;

@@ -14,7 +14,7 @@
 */
 
 MAC LocalMAC = { 1,2,3,4,5,6 };
-IP  LocalIP = {1,2,3,4};
+IP  LocalIP = {4,3,2,1};
 MAC BrocastMAC = {0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 MAC ZeroMAC = {0x00,0x00, 0x00, 0x00, 0x00, 0x00};
 IP  BrocastIP = {192,168,120,255};
@@ -23,47 +23,6 @@ static uint16_t prvIP_GetIdentify(void)
 {
 	return 1;
 }
-/*
-****************************************************
-*  Function       : prvIP_GetCheckSum
-*  Description    : Generate IP header checksum
-*  Params         : pIP_Header:IP header
-*  Return         : The checksum
-*  Author         : -5A4A5943-
-*  History        :
-					2017--04--27--14--46--43
-					Available now
-*****************************************************
-*/
-static uint16_t prvIP_GetCheckSum(IP_Header * pIP_Header)
-{
-	uint16_t Checksum = DIY_ntohs(pIP_Header->CheckSum);
-	uint16_t HeaderLen = 0, TempDebug = 0;
-	uint16_t * pHeader = (uint16_t *)pIP_Header;
-	uint32_t cksum = 0;
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	HeaderLen = pIP_Header->U_VL.S_VL_ALL.HeaderLen * 4;
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	pIP_Header->CheckSum = 0;
-
-	while (HeaderLen > 1)
-	{
-		TempDebug = *pHeader++; TempDebug = DIY_ntohs(TempDebug);
-		cksum += TempDebug;
-		HeaderLen -= 2;
-	}
-	if (HeaderLen)
-	{
-		TempDebug = (*(uint8_t *)pHeader); TempDebug <<= 8;
-		cksum += TempDebug;
-	}
-	while (cksum >> 16)cksum = (cksum >> 16) + (cksum & 0xffff);
-
-	cksum = (uint16_t)(~cksum);
-
-	return cksum;
-}
-
 /*
 ****************************************************
 *  Function       : IP_AllowPacket
@@ -81,12 +40,12 @@ static uint16_t prvIP_GetCheckSum(IP_Header * pIP_Header)
 static RES prvIP_PreProcessPacket(IP_Header * pIP_Header)
 {
 	uint16_t Checksum = DIY_ntohs(pIP_Header->CheckSum);
-	if (Checksum != prvIP_GetCheckSum(pIP_Header))return IP_PacketDelete;
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
-	if (pIP_Header->U_VL.S_VL_ALL.Version != IP_VersionIPV4)return IP_PacketDelete;
-	if (pIP_Header->DstIP.U32 == LocalIP.U32)return IP_PacketPass;
-	if (pIP_Header->DstIP.U32 == BrocastIP.U32)return IP_PacketPass;
+	if (IsCheckSumRight(pIP_Header) != RES_True)return IP_PacketDelete;
+	//pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
+	//pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
+	if (IP_GetVersion(pIP_Header->VL) != IP_VersionIPV4)return IP_PacketDelete;
+	if (DIY_ntohl(pIP_Header->DstIP.U32) == LocalIP.U32)return IP_PacketPass;
+	if (DIY_ntohl(pIP_Header->DstIP.U32) == BrocastIP.U32)return IP_PacketPass;
 	return IP_PacketDelete;
 }
 
@@ -109,13 +68,13 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 
 	if (prvIP_PreProcessPacket(pIP_Header) == IP_PacketPass)
 	{
-		if (pIP_Header->U_TP.S_TP_ALL.Protocol != IP_Protocol_UDP)
+		if (pIP_Header->Protocol != IP_Protocol_UDP)
 		{
 			IP ip = {0};
 			ip.U32 = DIY_ntohl(pIP_Header->SrcIP.U32);
 			ARP_AddItem(&ip, &pEth_Header->SrcMAC);
 		}
-		switch (pIP_Header->U_TP.S_TP_ALL.Protocol)
+		switch (pIP_Header->Protocol)
 		{
 			case IP_Protocol_ICMP:/*ICMP_ProcessPacket(pNeteworkBuff); */break;
 			case IP_Protocol_IGMP:/*IGMP_ProcessPacket(pNeteworkBuff); */break;
@@ -151,29 +110,31 @@ void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protoc
 	IP_Header * pIP_Header = (IP_Header*)&pEthernet_Header->Buff;
 	MAC Temp;
 	/* IP */
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
-	pIP_Header->U_FO.U_FO_ALL = DIY_ntohs(pIP_Header->U_FO.U_FO_ALL);
+	//pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
+	//pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
+	//pIP_Header->U_FO.U_FO_ALL = DIY_ntohs(pIP_Header->U_FO.U_FO_ALL);
 
-	pIP_Header->U_VL.S_VL_ALL.Version = IP_VersionIPV4;
-	pIP_Header->U_VL.S_VL_ALL.HeaderLen = IP_HeaderLen/4;
+	//pIP_Header->U_VL.S_VL_ALL.Version = IP_VersionIPV4;
+	//pIP_Header->U_VL.S_VL_ALL.HeaderLen = IP_HeaderLen/4;
+	pIP_Header->VL = IP_SetHeaderLenVersion(IP_HeaderLen, IP_VersionIPV4);
 	pIP_Header->TOS = 0;
 	pIP_Header->Identify = prvIP_GetIdentify();
 	pIP_Header->Identify = DIY_ntohs(pIP_Header->Identify);
-	pIP_Header->U_FO.S_FO_ALL.Flags = 0;
-	pIP_Header->U_FO.S_FO_ALL.Offset = 0;
-	pIP_Header->U_TP.S_TP_ALL.TTL = IP_TTL_MAX;
-	pIP_Header->U_TP.S_TP_ALL.Protocol = Protocol;
-	pIP_Header->DstIP.U32 = RemoteIP->U32;
-	pIP_Header->SrcIP.U32 = LocalIP.U32;
+	pIP_Header->FO = 0;
+	//pIP_Header->U_FO.S_FO_ALL.Offset = 0;
+	pIP_Header->TTL = IP_TTL_MAX;
+	pIP_Header->Protocol = Protocol;
+	pIP_Header->DstIP.U32 = DIY_htonl(RemoteIP->U32);
+	pIP_Header->SrcIP.U32 = DIY_htonl(LocalIP.U32);
 	pIP_Header->TotalLen = DIY_ntohs(IpDataLen + IP_HeaderLen + IP_GetOptionSize());
 
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
-	pIP_Header->U_FO.U_FO_ALL = DIY_ntohs(pIP_Header->U_FO.U_FO_ALL);
+	//pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
+	//pIP_Header->U_TP.U_TP_ALL = DIY_ntohs(pIP_Header->U_TP.U_TP_ALL);
+	//pIP_Header->U_FO.U_FO_ALL = DIY_ntohs(pIP_Header->U_FO.U_FO_ALL);
 
-	pIP_Header->CheckSum = prvIP_GetCheckSum(pIP_Header);
-	pIP_Header->CheckSum = DIY_htons(pIP_Header->CheckSum);
+	//pIP_Header->CheckSum = prvIP_GetCheckSum(pIP_Header);
+	//pIP_Header->CheckSum = DIY_htons(pIP_Header->CheckSum);
+	FillCheckSum(pIP_Header);
 	/* ETH */
 	Ethernet_FillPacket(pNeteworkBuff, EthernetType_IP, RemoteIP);
 }

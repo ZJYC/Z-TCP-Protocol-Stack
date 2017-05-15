@@ -3,6 +3,7 @@
 #include "IP.h"
 #include "TCP.h"
 #include "UDP.h"
+#include "Ethernet.h"
 
 /*2017--05--15--15--35--08(ZJYC): 着手构建CRC校验树   */
 
@@ -72,9 +73,7 @@ static uint16_t prvIP_GetCheckSum(IP_Header * pIP_Header)
 	uint16_t HeaderLen = 0, TempDebug = 0;
 	uint16_t * pHeader = (uint16_t *)pIP_Header;
 	uint32_t cksum = 0;
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
-	HeaderLen = pIP_Header->U_VL.S_VL_ALL.HeaderLen * 4;
-	pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);
+	HeaderLen = IP_GetHeaderLen(pIP_Header->VL);
 	pIP_Header->CheckSum = 0;
 
 	while (HeaderLen > 1)
@@ -94,10 +93,48 @@ static uint16_t prvIP_GetCheckSum(IP_Header * pIP_Header)
 
 	return cksum;
 }
+/* 校验IP层及以上，目前只有TCP/UDP */
+RES IsCheckSumRight(IP_Header * pIP_Header)
+{
+	uint16_t Temp = 0;
+	Temp = DIY_htons(pIP_Header->CheckSum);
+	if (Temp == prvIP_GetCheckSum(pIP_Header))
+	{
+		if (pIP_Header->Protocol == IP_Protocol_TCP)
+		{
+			TCP_Header * pTCP_Header = (TCP_Header *)&pIP_Header->Buff;
+			Temp = DIY_htons(pTCP_Header->CheckSum);
+			if (Temp == prvTCP_ChecksumCalculate(pIP_Header))return RES_True;
+		}
+		if (pIP_Header->Protocol == IP_Protocol_UDP)
+		{
+			UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
+			Temp = DIY_htons(pUDP_Header->CheckSum);
+			if (Temp == prvUDP_ChecksumCalculate(pIP_Header))return RES_True;
+		}
+	}
+	return RES_False;
+}
+/* 填充IP层及以上的校验和 */
+void FillCheckSum(IP_Header * pIP_Header)
+{
+	uint16_t Temp = 0;
 
-
-
-
+	if (pIP_Header->Protocol == IP_Protocol_TCP)
+	{
+		TCP_Header * pTCP_Header = (TCP_Header*)&pIP_Header->Buff;
+		Temp = prvTCP_ChecksumCalculate(pIP_Header);
+		pTCP_Header->CheckSum = DIY_htons(Temp);
+	}
+	if (pIP_Header->Protocol == IP_Protocol_UDP)
+	{
+		UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
+		Temp = prvUDP_ChecksumCalculate(pIP_Header); DIY_htons(pUDP_Header->CheckSum);
+		pUDP_Header->CheckSum = DIY_htons(Temp);
+	}
+	Temp = prvIP_GetCheckSum(pIP_Header);
+	pIP_Header->CheckSum = DIY_htons(Temp);
+}
 
 
 
