@@ -53,7 +53,7 @@ static void prvTCPWin_AddSegmentToEnd(Segment * pSegmentHead, Segment * pSegment
 	if (!pSegmentHead->Next)pSegmentHead->Next = pSegment;
 }
 
-TCP_Win * prvTCPWin_NewWindows(uint32_t WinSizeRx, uint32_t WinSizeTx)
+TCP_Win * TCPWin_NewWindows(uint32_t WinSizeRx, uint32_t WinSizeTx)
 {
 
 	TCP_Win * pTCP_Win = (TCP_Win*)MM_Ops.Malloc(sizeof(TCP_Win));
@@ -69,10 +69,13 @@ TCP_Win * prvTCPWin_NewWindows(uint32_t WinSizeRx, uint32_t WinSizeTx)
 
 			pTCP_Win->TxCapacity = WinSizeTx;
 			pTCP_Win->RxCapacity = WinSizeRx;
+			//pTCP_Win->pSegment_Pri = prvTCPWin_NewSegment(0,0,0);
+			//pTCP_Win->pSegment_Rx = prvTCPWin_NewSegment(0, 0, 0);
+			//->pSegment_Tx = prvTCPWin_NewSegment(0, 0, 0);
+			//pTCP_Win->pSegment_Wait = prvTCPWin_NewSegment(0, 0, 0);
 		}
 	}
-
-
+	return pTCP_Win;
 }
 
 static Segment * prvTCPWin_FindSnEndFromHeader(Segment * pSegment,uint32_t Sn)
@@ -206,11 +209,11 @@ Segment * TCPWin_GetDataLenFromSegmentHeader(Segment * pSegmentHead,uint8_t ** D
 
 void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_t Peek)
 {
-	/* 等待应答组 */
-	uint32_t SegmentWaitCounter = prvTCPWin_GetCount(pTCP_Win->pSegment_Wait);
-	/* 窗体宽度 */
-	uint32_t SegmentWin = pTCP_Win->TxCapacity / pTCP_Win->MSS;
+	uint32_t SegmentWaitCounter = 0, SegmentWin = pTCP_Win->TxCapacity / pTCP_Win->MSS;
 	Segment * pSegment = 0;
+	if(pTCP_Win->pSegment_Wait)SegmentWaitCounter = prvTCPWin_GetCount(pTCP_Win->pSegment_Wait);
+	else SegmentWaitCounter = 0;
+	
 	/* 还可继续发送数据 */
 	if (SegmentWin > SegmentWaitCounter)
 	{
@@ -227,13 +230,18 @@ void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_
 		}
 		else
 		{
-			pSegment = TCPWin_GetDataLenFromSegmentHeader(pTCP_Win->pSegment_Tx, Data, Len);
-			/* 从TX组移至等待组 */
-			if (!Peek && pSegment)
+			/* 有数据要发送 */
+			if (pTCP_Win->pSegment_Tx)
 			{
-				prvTCPWin_DelSegmentFrom(pTCP_Win->pSegment_Tx, pSegment);
-				prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Wait, pSegment);
+				pSegment = TCPWin_GetDataLenFromSegmentHeader(pTCP_Win->pSegment_Tx, Data, Len);
+				/* 从TX组移至等待组 */
+				if (!Peek && pSegment)
+				{
+					prvTCPWin_DelSegmentFrom(pTCP_Win->pSegment_Tx, pSegment);
+					prvTCPWin_AddSegmentToEnd(pTCP_Win->pSegment_Wait, pSegment);
+				}
 			}
+			*Len = 0;
 		}
 	}
 }
