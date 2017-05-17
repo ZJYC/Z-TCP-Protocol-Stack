@@ -19,7 +19,7 @@ void Init(void)
 {
 	Network_Init();
 	ARP_Init();
-	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
+	//ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
 }
 
 int main(void)
@@ -28,7 +28,8 @@ int main(void)
 	Init();
 	//Socket * pSocket = prvSocket_New(&Address, IP_Protocol_UDP);
 	//Socket_Send(pSocket,Data, 10);
-	TCP_Test();
+	//TCP_Test();
+	ARP_Test();
 	while (1)MainLoop();
 }
 

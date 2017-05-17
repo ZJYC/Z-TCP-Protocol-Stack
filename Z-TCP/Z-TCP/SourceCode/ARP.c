@@ -104,8 +104,10 @@ static RES prvARP_PreProcesspacket(NeteworkBuff * pNeteorkBuff)
 	Ethernet_Header*pEthernet_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
 	ARP_Header * pARP_Header = (ARP_Header*)&pEthernet_Header->Buff;
 
-	if (pARP_Header->HardwareType == ARP_HardwareType && pARP_Header->HardwareLen == ARP_HardwareLen &&
-		pARP_Header->ProtocolType == ARP_ProtocolType && pARP_Header->ProtocolLen == ARP_ProtocolLen)
+	if (DIY_ntohs(pARP_Header->HardwareType) == ARP_HardwareType && 
+		pARP_Header->HardwareLen == ARP_HardwareLen &&
+		DIY_ntohs(pARP_Header->ProtocolType) == ARP_ProtocolType &&
+		pARP_Header->ProtocolLen == ARP_ProtocolLen)
 	{
 		return RES_ARPPacketPass;
 	}
@@ -123,18 +125,18 @@ static void ARP_SendRespon(NeteworkBuff * pOldNeteorkBuff)
 	ARP_Header * pNewARP_Header = (ARP_Header*)&pNewEthernet_Header->Buff;
 	/* ETH */
 	pNewEthernet_Header->DstMAC = pOldEthernet_Header->SrcMAC;
-	pNewEthernet_Header->SrcMAC = pOldEthernet_Header->DstMAC;
-	pNewEthernet_Header->Type = EthernetType_ARP;
+	pNewEthernet_Header->SrcMAC = LocalMAC;
+	pNewEthernet_Header->Type = DIY_htons(EthernetType_ARP);
 	/* ARP */
 	pNewARP_Header->DstIP.U32 = pOldARP_Header->SrcIP.U32;
 	pNewARP_Header->DstMAC = pOldARP_Header->SrcMAC;
-	pNewARP_Header->SrcIP.U32 = LocalIP.U32;
+	pNewARP_Header->SrcIP.U32 = DIY_htonl(LocalIP.U32);
 	pNewARP_Header->SrcMAC = LocalMAC;
 	pNewARP_Header->HardwareLen = ARP_HardwareLen;
-	pNewARP_Header->HardwareType = ARP_HardwareType;
-	pNewARP_Header->Opcode = ARP_OpcodeRespond;
+	pNewARP_Header->HardwareType = DIY_htons(ARP_HardwareType);
+	pNewARP_Header->Opcode = DIY_htons(ARP_OpcodeRespond);
 	pNewARP_Header->ProtocolLen = ARP_ProtocolLen;
-	pNewARP_Header->ProtocolType = ARP_ProtocolType;
+	pNewARP_Header->ProtocolType = DIY_htons(ARP_ProtocolType);
 	/* TX */
 	Ethernet_TransmitPacket(pNewNeteworkBuff);
 }
@@ -147,17 +149,17 @@ void ARP_SendRequest(IP * TargetIP)
 	/* ETH */
 	pNewEthernet_Header->DstMAC = BrocastMAC;
 	pNewEthernet_Header->SrcMAC = LocalMAC;
-	pNewEthernet_Header->Type = EthernetType_ARP;
+	pNewEthernet_Header->Type = DIY_htons(EthernetType_ARP);
 	/* ARP */
-	pNewARP_Header->DstIP.U32 = TargetIP->U32;
+	pNewARP_Header->DstIP.U32 = DIY_htonl(TargetIP->U32);
 	pNewARP_Header->DstMAC = ZeroMAC;
-	pNewARP_Header->SrcIP.U32 = LocalIP.U32;
+	pNewARP_Header->SrcIP.U32 = DIY_htonl(LocalIP.U32);
 	pNewARP_Header->SrcMAC = LocalMAC;
 	pNewARP_Header->HardwareLen = ARP_HardwareLen;
-	pNewARP_Header->HardwareType = ARP_HardwareType;
-	pNewARP_Header->Opcode = ARP_OpcodeRequest;
+	pNewARP_Header->HardwareType = DIY_htons(ARP_HardwareType);
+	pNewARP_Header->Opcode = DIY_htons(ARP_OpcodeRequest);
 	pNewARP_Header->ProtocolLen = ARP_ProtocolLen;
-	pNewARP_Header->ProtocolType = ARP_ProtocolType;
+	pNewARP_Header->ProtocolType = DIY_htons(ARP_ProtocolType);
 	/* TX */
 	Ethernet_TransmitPacket(pNewNeteworkBuff);
 }
@@ -166,17 +168,122 @@ void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 {
 	Ethernet_Header*pEthernet_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
 	ARP_Header * pARP_Header = (ARP_Header*)&pEthernet_Header->Buff;
-
+	IP ip = { 0 };
 	if (prvARP_PreProcesspacket(pNeteorkBuff) != RES_ARPPacketPass)return;
 
-	if (pARP_Header->Opcode == ARP_OpcodeRequest)
+	if (DIY_ntohs(pARP_Header->Opcode) == ARP_OpcodeRequest)
 	{
-		ARP_AddItem(&pARP_Header->SrcIP, &pARP_Header->SrcMAC);
-		ARP_SendRespon(pNeteorkBuff);
+		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
+		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
+		ip.U32 = DIY_ntohl(pARP_Header->DstIP.U32);
+		if(ip.U32 == LocalIP.U32)ARP_SendRespon(pNeteorkBuff);
 	}
-	if (pARP_Header->Opcode == ARP_OpcodeRespond)
+	if (DIY_ntohs(pARP_Header->Opcode) == ARP_OpcodeRespond)
 	{
-		ARP_AddItem(&pARP_Header->SrcIP, &pARP_Header->SrcMAC);
+		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
+		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
 	}
+}
+
+uint8_t DebugBuff1[] = 
+{
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x2a,
+	0xff,0xff,0xff,0xff,0xff,0xff,0x01,0x02,
+	0x03,0x04,0x05,0x06,0x08,0x06,0x00,0x01,
+	0x08,0x00,0x06,0x04,0x00,0x01,0x01,0x02,
+	0x03,0x04,0x05,0x06,0x01,0x02,0x03,0x04,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x07,0x08,
+	0x09,0x00,
+};
+uint8_t DebugBuff2[] =
+{
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x2a,
+	0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
+	0x09,0x0a,0x0b,0x0c,0x08,0x06,0x00,0x01,
+	0x08,0x00,0x06,0x04,0x00,0x02,0x07,0x08,
+	0x09,0x0a,0x0b,0x0c,0x07,0x08,0x09,0x00,
+	0x01,0x02,0x03,0x04,0x05,0x06,0x01,0x02,
+	0x03,0x04,
+
+};
+uint8_t DebugBuff3[] =
+{
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x2a,
+	0xff,0xff,0xff,0xff,0xff,0xff,0x07,0x08,
+	0x09,0x0a,0x0b,0x0c,0x08,0x06,0x00,0x01,
+	0x08,0x00,0x06,0x04,0x00,0x01,0x07,0x08,
+	0x09,0x0a,0x0b,0x0c,0x07,0x08,0x09,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x02,
+	0x03,0x04,
+};
+uint8_t DebugBuff4[] =
+{
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x2a,
+	0x07,0x08,0x09,0x0a,0x0b,0x0c,0x01,0x02,
+	0x03,0x04,0x05,0x06,0x08,0x06,0x00,0x01,
+	0x08,0x00,0x06,0x04,0x00,0x02,0x01,0x02,
+	0x03,0x04,0x05,0x06,0x01,0x02,0x03,0x04,
+	0x07,0x08,0x09,0x0a,0x0b,0x0c,0x07,0x08,
+	0x09,0x00,
+};
+
+NeteworkBuff * pNeteorkBuff[] = 
+{
+	(NeteworkBuff*)DebugBuff1,
+	(NeteworkBuff*)DebugBuff2,
+	(NeteworkBuff*)DebugBuff3,
+	(NeteworkBuff*)DebugBuff4,
+};
+
+static void prvARP_PrintfMAC(MAC * mac)
+{
+	uint8_t i = 0;
+	for (i = 0; i < 6; i++)
+	{
+		printf("%02X ", mac->Byte[i]);
+	}
+}
+
+static void prvARP_PrintfIP(IP * ip)
+{
+	int8_t i = 0;
+	for (i = 3; i >= 0; i--)
+	{
+		printf("%X ", ip->U8[i]);
+	}
+}
+
+void ARP_PrintTable(void)
+{
+	uint16_t i = 0;
+	for (i = 0; i < ARP_CACHE_CAPACITY; i++)
+	{
+		if (pARP_Cache[i].Used == ARP_True)
+		{
+			prvARP_PrintfIP(&pARP_Cache[i].IP);
+			printf("    @    ");
+			prvARP_PrintfMAC(&pARP_Cache[i].MAC);
+			printf("\r\n");
+		}
+	}
+}
+
+void ARP_Test(void)
+{
+	uint8_t i = 0; IP ip = { 0,9,8,7 };
+
+	for (i = 0; i < sizeof(pNeteorkBuff)/sizeof(pNeteorkBuff[0]); i++)
+	{
+		Ethernet_ProcessPacket(pNeteorkBuff[i]);
+		MainLoop();
+		ARP_PrintTable();
+	}
+
+	ARP_SendRequest(&ip);
+	MainLoop();
 }
 

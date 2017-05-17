@@ -59,7 +59,7 @@ void ARP_AddItem(IP * ip, MAC * mac);
 void ARP_TickTask(void);
 void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void ARP_SendRequest(IP * TargetIP);
-
+void ARP_Test(void);
 #ifdef __cplusplus
 }
 #endif
