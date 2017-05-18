@@ -51,6 +51,7 @@ uint8_t ARP_GetMAC_ByIP(IP * ip, MAC * mac, uint8_t * IndexOfCache, uint8_t Send
 			return ARP_True;
 		}
 	}
+	/* 找不到ip则发送ARP请求报文 */
 	if (SendRequest != NULL)ARP_SendRequest(ip);
 	return ARP_False;
 }
@@ -91,6 +92,7 @@ void ARP_TickTask(void)
 			{
 				pARP_Cache[i].Used = ARP_False;
 			}
+			/* TTL较少到一半时自动发送ARP请求 */
 			if (pARP_Cache[i].TTL <= ARP_TTL_MAX / 2)
 			{
 				ARP_SendRequest(&pARP_Cache[i].IP);

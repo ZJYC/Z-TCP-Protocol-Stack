@@ -180,7 +180,7 @@ void TCPWin_AddTxData(TCP_Win * pTCP_Win, uint8_t * Data, uint32_t Len)
 	uint8_t * Buff = 0;
 	Segment * pSegment = 0;
 	uint32_t SegmentLen = 0;
-	memcpy((uint8_t*)pTCP_Win->TxBuff, (uint8_t*)Data,Len);
+	memcpy((uint8_t*)pTCP_Win->TxBuff, Data,Len);
 	pTCP_Win->TxBuffLen = Len;
 	Buff = pTCP_Win->TxBuff;
 
@@ -314,6 +314,7 @@ void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * DataLen)
 	{
 		memcpy(*Data, MinSnSegment->Buff, (SACK[0] - MinSn));
 		*DataLen = SACK[0] - MinSn;
+
 	}
 
 }
