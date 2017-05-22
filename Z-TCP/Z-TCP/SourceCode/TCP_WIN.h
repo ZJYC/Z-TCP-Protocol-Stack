@@ -15,10 +15,9 @@ extern "C" {
 	typedef struct Segment_
 	{
 		struct Segment_ * Next;
-		uint8_t * Buff;
 		uint32_t Len;
 		uint32_t SnStart;
-		uint32_t SnEnd;
+		uint8_t Buff;
 	}Segment;
 
 	typedef struct TCP_Win_
