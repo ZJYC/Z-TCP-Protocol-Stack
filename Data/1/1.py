@@ -16,10 +16,16 @@ RA_2=LLayer12/TCP(sport=port[1],dport=port[2],flags="S"+"A",seq=10,ack=101,windo
 RA_3=LLayer21/TCP(sport=port[2],dport=port[1],flags="A",ack=11,seq=101,window=100,options=[("MSS",10)])
 RA_4=LLayer21/TCP(sport=port[2],dport=port[1],flags="P"+"A",seq=101,ack=11,window=100)/("ABCDEFG")
 RA_5=LLayer12/TCP(sport=port[1],dport=port[2],flags="A",seq=11,ack=108,window=50)
+RA_6=LLayer21/TCP(sport=port[2],dport=port[1],flags="P"+"A",seq=108,ack=11,window=100)/("123456789")
+RA_7=LLayer12/TCP(sport=port[1],dport=port[2],flags="A",seq=11,ack=117,window=50)
+RA_8=LLayer21/TCP(sport=port[2],dport=port[1],flags="P"+"A",seq=117,ack=11,window=100)/("ZJYC")
+RA_9=LLayer12/TCP(sport=port[1],dport=port[2],flags="A",seq=11,ack=121,window=50)
 #Storage packets
 pkt=[]
+
 pkt.append(RA_1);pkt.append(RA_2);pkt.append(RA_3)
-pkt.append(RA_4);pkt.append(RA_5);#pkt.append(RA_6)
+pkt.append(RA_4);pkt.append(RA_5);pkt.append(RA_6)
+pkt.append(RA_7);pkt.append(RA_8);pkt.append(RA_9)
 
 wrpcap("1.pcap",pkt)
 

@@ -52,6 +52,7 @@ NeteworkBuff * Network_New(uint8_t Direction,uint32_t Len)
 
 	if (MemHeader != NULL)
 	{
+		memset(MemHeader, 0x00, ActuallLen);
 		pNeteworkBuff = (NeteworkBuff*)MemHeader;
 		prvNetwork_Insert(Direction, pNeteworkBuff);
 		pNeteworkBuff->Ready = NULL;

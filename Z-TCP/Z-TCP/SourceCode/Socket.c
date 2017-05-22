@@ -107,7 +107,10 @@ void Socket_Send(Socket * pSocket, uint8_t * Data, uint32_t Len)
 	}
 }
 
-
+void Socket_Recv(Socket * pSocket, uint8_t * Data, uint32_t * Len)
+{
+	TCPWin_GiveUsrRxData(pSocket->pTCP_Control->pTCP_Win,Data,Len);
+}
 
 
 

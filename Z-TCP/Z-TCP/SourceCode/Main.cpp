@@ -28,8 +28,8 @@ int main(void)
 	Init();
 	//Socket * pSocket = prvSocket_New(&Address, IP_Protocol_UDP);
 	//Socket_Send(pSocket,Data, 10);
-	//TCP_Test();
-	ARP_Test();
+	TCP_Test();
+	//ARP_Test();
 	while (1)MainLoop();
 }
 

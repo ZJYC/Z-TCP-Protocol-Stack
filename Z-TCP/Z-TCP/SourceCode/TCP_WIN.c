@@ -328,7 +328,7 @@ void TCPWin_RxHasHole(TCP_Win * pTCP_Win,uint32_t **SACK,uint32_t *SACKLen)
 	if (SACKLen)*SACKLen = SackIndex;
 }
 /* 将接收到的数据向用户传递 */
-void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * DataLen)
+void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t * Data,uint32_t * DataLen)
 {
 	/* 寻找最低Sn号 */
 	Segment * MinSnSegment = prvTCPWin_FindMinSnStartFromHeader(&pTCP_Win->pSegment_Rx);
