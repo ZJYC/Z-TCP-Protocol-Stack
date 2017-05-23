@@ -104,7 +104,7 @@ void Ethernet_FillPacket(NeteworkBuff * pNeteorkBuff, uint32_t Protocol, IP * Re
 	MAC DstMAC = { 0x00 };
 	Ethernet_Header * pEthernet_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
 
-	ARP_GetMAC_ByIP(RemoteIP, &DstMAC, NULL,NULL);
+	ARP_GetMAC_ByIP(RemoteIP, &DstMAC, NULL,1);
 	pEthernet_Header->SrcMAC = LocalMAC;
 	pEthernet_Header->DstMAC = DstMAC;
 	pEthernet_Header->Type = DIY_htons(Protocol);
