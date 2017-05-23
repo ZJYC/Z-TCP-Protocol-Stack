@@ -230,8 +230,8 @@ Segment * TCPWin_GetDataLenFromSegmentHeader(Segment ** pSegmentHeader,uint8_t *
 		return NULL;
 	}
 
-	if (Data)*Data = &SegmentTemp->Next->Buff;
-	if (Len)*Len = SegmentTemp->Next->Len;
+	if (Data)*Data = &SegmentTemp->Buff;
+	if (Len)*Len = SegmentTemp->Len;
 
 	return SegmentTemp;
 }
@@ -286,7 +286,7 @@ void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_
 			}
 		}
 	}
-	if (Len)*Len = 0;
+	//if (Len)*Len = 0;
 }
 /* 把接受的数据保存在窗体，以链表的形式保存在pSegment_Rx */
 void TCPWin_AddRxData(TCP_Win * pTCP_Win, uint8_t * RxData, uint32_t RxLen,uint32_t Sn)

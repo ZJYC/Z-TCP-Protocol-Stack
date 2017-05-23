@@ -103,7 +103,7 @@ void Socket_Send(Socket * pSocket, uint8_t * Data, uint32_t Len)
 	}
 	if (pSocket->Procotol == IP_Protocol_TCP)
 	{
-
+		TCP_SendData(pSocket->pTCP_Control,Data,Len);
 	}
 }
 
