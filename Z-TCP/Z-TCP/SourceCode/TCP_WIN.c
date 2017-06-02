@@ -105,7 +105,7 @@ static Segment * prvTCPWin_FindSnEndFromHeader(Segment ** pSegmentHeader,uint32_
 	}
 	return NULL;
 }
-
+/* 寻找SN号 */
 static Segment * prvTCPWin_FindSnStartFromHeader(Segment ** pSegmentHeader, uint32_t Sn)
 {
 	Segment * SegmentTemp = *pSegmentHeader;
@@ -320,12 +320,26 @@ void TCPWin_RxHasHole(TCP_Win * pTCP_Win,uint32_t **SACK,uint32_t *SACKLen)
 		else
 		{
 			pSegmentTemp = prvTCPWin_FindMinSnNotLessThanStartFromHeader(&pTCP_Win->pSegment_Rx, TempSn);
-			*SACK[SackIndex++] = TempSn;
-			*SACK[SackIndex++] = pSegmentTemp->SnStart;
+			if(SACK)*SACK[SackIndex++] = TempSn;
+			if(SACK)*SACK[SackIndex++] = pSegmentTemp->SnStart;
 			TempSn = pSegmentTemp->SnStart;
 		}
 	}
 	if (SACKLen)*SACKLen = SackIndex;
+}
+/* 判断接收是否完成 */
+uint8_t TCPWin_RxFinished(TCP_Win * pTCP_Win)
+{
+	uint32_t SACKLen = 0;
+	TCPWin_RxHasHole(pTCP_Win,0, &SACKLen);
+	if (SACKLen)return 0;
+	return 1;
+}
+/* 判断发送是否完成 */
+uint8_t TCPWin_TxFinished(TCP_Win * pTCP_Win)
+{
+	if (pTCP_Win->pSegment_Tx || pTCP_Win->pSegment_Wait || pTCP_Win->pSegment_Pri)return 0;
+	return 1;
 }
 /* 将接收到的数据向用户传递 */
 void TCPWin_GiveUsrRxData(TCP_Win * pTCP_Win,uint8_t * Data,uint32_t * DataLen)

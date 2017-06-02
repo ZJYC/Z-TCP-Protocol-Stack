@@ -91,6 +91,14 @@ void Socket_Connect(Socket * pSocket)
 	}
 }
 
+void Socket_Close(Socket * pSocket)
+{
+	if (pSocket->Procotol == IP_Protocol_TCP)
+	{
+		TCP_Close(pSocket->pTCP_Control);
+	}
+}
+
 void Socket_Send(Socket * pSocket, uint8_t * Data, uint32_t Len)
 {
 	if (pSocket == NULL)return;
