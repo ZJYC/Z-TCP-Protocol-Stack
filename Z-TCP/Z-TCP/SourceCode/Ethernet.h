@@ -30,8 +30,11 @@ void Ethernet_SendNetworkBuff(NeteworkBuff * pNeteorkBuff);
 void Ethernet_TransmitPacket(NeteworkBuff * pNeteorkBuff);
 void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void Ethernet_FillPacket(NeteworkBuff * pNeteorkBuff, uint32_t Protocol, IP * RemoteIP);
+void Ethernet_Init(void);
 
 extern NeteworkBuff NeteorkBuffTemp;
+extern MAC LocalMAC;
+extern MAC BrocastMAC;
 
 #ifdef __cplusplus
 }

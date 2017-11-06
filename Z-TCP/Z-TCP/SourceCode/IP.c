@@ -13,16 +13,20 @@
 	每一层只负责他们自己的属性并加入到<NeteorkBuffTemp>中
 */
 
-MAC LocalMAC = { 1,2,3,4,5,6 };
-IP  LocalIP = {4,3,2,1};
-MAC BrocastMAC = {0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+IP  LocalIP = {0};
 MAC ZeroMAC = {0x00,0x00, 0x00, 0x00, 0x00, 0x00};
-IP  BrocastIP = {192,168,120,255};
+IP  BrocastIP = {0};
 
 static uint16_t prvIP_GetIdentify(void)
 {
 	return 1;
 }
+
+void IP_Init(void) {
+	LocalIP = IP_Str2Int("0.0.0.0");
+	BrocastIP = IP_Str2Int("255.255.255.255");
+}
+
 /*
 ****************************************************
 *  Function       : IP_AllowPacket
@@ -46,6 +50,8 @@ static RES prvIP_PreProcessPacket(IP_Header * pIP_Header)
 	if (IP_GetVersion(pIP_Header->VL) != IP_VersionIPV4)return IP_PacketDelete;
 	if (DIY_ntohl(pIP_Header->DstIP.U32) == LocalIP.U32)return IP_PacketPass;
 	if (DIY_ntohl(pIP_Header->DstIP.U32) == BrocastIP.U32)return IP_PacketPass;
+	/* new for debug DHCP */
+	if (LocalIP.U32 == 0)return IP_PacketPass;
 	return IP_PacketDelete;
 }
 

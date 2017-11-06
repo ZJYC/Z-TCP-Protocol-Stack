@@ -7,31 +7,32 @@
 #include "UDP.h"
 #include "TCP_Task.h"
 #include "TCP.h"
-
-ADDR Address = 
-{
-	{ 7,8,9,0 }, {1,2,3,4},
-	{ 7, 8, 9, 10, 11, 12 }, {1,2,3,4,5,6},
-	{ 7890 }, {1234},
-};
+#include "DHCP.h"
 
 void Init(void)
 {
 	Network_Init();
 	ARP_Init();
-	//ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
+	Ethernet_Init();
+	IP_Init();
+	DHCP_Init();
 }
 
 int main(void)
 {
+	//IP_Str2Int((uint8_t *)"192.168.120.98", 0);
+	//MAC_Str2Int((uint8_t*)"11:22:aa:bb:cc:34",0);
 	//uint8_t Data[] = "1234567890";
 	Init();
 	//Socket * pSocket = prvSocket_New(&Address, IP_Protocol_UDP);
 	//Socket_Send(pSocket,Data, 10);
 	//TCP_Test_Rx();
-	TCP_Test_Tx();
+	//----TCP_Test_Tx();
 	//ARP_Test();
-	while (1)MainLoop();
+	DHCP_Test();
+	while (1) {
+		;
+	}
 }
 
 

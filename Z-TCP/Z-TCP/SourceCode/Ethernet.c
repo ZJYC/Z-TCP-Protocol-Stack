@@ -14,6 +14,13 @@
 
 uint8_t DebugBuff[2048] = { 0x00 };
 
+MAC LocalMAC = { 0 };
+MAC BrocastMAC = { 0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+
+void Ethernet_Init(void) {
+	LocalMAC = MAC_Str2Int("1:1:1:1:1:1");
+}
+
 /*
 ****************************************************
 *  Function       : EthernetDeriverSend
@@ -29,11 +36,13 @@ static void PHY_Ethernet_DriverSend(uint8_t * Data,uint32_t Len)
 	//memset(DebugBuff, 0x00, Len);
 	//memcpy(DebugBuff, Data, Len);
 	uint16_t i = 0;
+	printf("\r\n");
 	for (i = 0; i < Len; i++)
 	{
 		if (i % 8 == 0)printf("\r\n");
 		printf("%02X ", Data[i]);
 	}
+	printf("\r\n");
 }
 
 static void PHY_Ethernet_DriverRecv(uint8_t * Data,uint32_t Len)

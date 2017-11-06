@@ -15,13 +15,18 @@
 #define DIY_htonc(x)	(((x) & 0xF0) >> 4 | ((x) & 0x0F) << 4)
 #define DIY_ntohc(x)	(((x) & 0xF0) >> 4 | ((x) & 0x0F) << 4)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+//uint16_t prvGetCheckSum(uint16_t *data, uint32_t nums);
+IP IP_Str2Int(const char * Str);
+MAC MAC_Str2Int(const char * Str);
+void Delay(uint32_t Len);
 
-
-
-uint16_t prvGetCheckSum(uint16_t *data, uint32_t nums);
-
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

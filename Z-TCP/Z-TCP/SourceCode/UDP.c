@@ -5,6 +5,7 @@
 #include "IP.h"
 #include "Basic.h"
 #include "UDP.h"
+#include "DHCP.h"
 
 static RES UDP_PreProcessPacket(NeteworkBuff * pNeteorkBuff)
 {
@@ -12,7 +13,7 @@ static RES UDP_PreProcessPacket(NeteworkBuff * pNeteorkBuff)
 	IP_Header * pIP_Header = (IP_Header*)&pEthernet_Header->Buff;
 	UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
 	Socket * pSocket = Socket_GetSocketByPort(DIY_ntohs(pUDP_Header->DstPort));
-	if (pSocket == NULL)return RES_UDPPacketDeny;
+	//if (pSocket == NULL)return RES_UDPPacketDeny;
 	return RES_UDPPacketPass;
 }
 
@@ -30,7 +31,7 @@ void prvUDP_FillPacket(NeteworkBuff * pNeteorkBuff, IP * RemoteIP,uint16_t DstPo
 	pUDP_Header->SrcPort = DIY_htons(SrcPort);
 	memcpy(pUDP_Payload, Data, Len);
 	/* IP */
-	prvIP_FillPacket(pNeteorkBuff, RemoteIP, IP_Protocol_UDP, IP_HeaderLen + DIY_htons(pUDP_Header->DataLen));
+	prvIP_FillPacket(pNeteorkBuff, RemoteIP, IP_Protocol_UDP, DIY_htons(pUDP_Header->DataLen));
 }
 
 void UDP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
@@ -41,8 +42,13 @@ void UDP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 
 	if (UDP_PreProcessPacket(pNeteorkBuff) != RES_UDPPacketPass)return;
 
-	switch (0)
+	switch (DIY_ntohs(pUDP_Header->DstPort))
 	{
+	case DHCP_CLIENT_PORT: {
+		/* DHCP process packets function... */
+		DHCP_ProcessPacket(pNeteorkBuff);
+		break;
+	}
 		default:break;
 	}
 

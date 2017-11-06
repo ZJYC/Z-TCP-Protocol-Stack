@@ -122,6 +122,7 @@
     <ClInclude Include="SourceCode\ARP.h" />
     <ClInclude Include="SourceCode\Basic.h" />
     <ClInclude Include="SourceCode\DataTypeDef.h" />
+    <ClInclude Include="SourceCode\DHCP.h" />
     <ClInclude Include="SourceCode\Ethernet.h" />
     <ClInclude Include="SourceCode\heap_5.h" />
     <ClInclude Include="SourceCode\IP.h" />
@@ -135,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="SourceCode\ARP.c" />
     <ClCompile Include="SourceCode\Basic.c" />
+    <ClCompile Include="SourceCode\DHCP.c" />
     <ClCompile Include="SourceCode\Ethernet.c" />
     <ClCompile Include="SourceCode\heap_5.c" />
     <ClCompile Include="SourceCode\IP.c" />

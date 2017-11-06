@@ -120,6 +120,42 @@ void Socket_Recv(Socket * pSocket, uint8_t * Data, uint32_t * Len)
 	TCPWin_GiveUsrRxData(pSocket->pTCP_Control->pTCP_Win,Data,Len);
 }
 
+/* ÅäÖÃÌ×½Ó×ÖÊý¾Ý */
+void Socket_Config(Socket * pSocket,uint8_t Type, uint32_t Value)
+{
+
+	if (Type == 0)return;
+
+	switch (Type)
+	{
+		case TCP_MSS:
+		case TCP_WIN_SIZE:
+		case TCP_WIN_SCALE:
+		case TCP_INIT_SN:
+		{
+			if (Type == TCP_MSS) {
+				pSocket->pTCP_Control->LocalMSS = Value;
+				pSocket->pTCP_Control->MSS_Change = 1;
+				pSocket->pTCP_Control->MSS_Send = 1;
+			}
+			if (Type == TCP_WIN_SIZE) {
+				pSocket->pTCP_Control->LocalWinSize = Value;
+				pSocket->pTCP_Control->WIN_Change = 1;
+			}
+			if (Type == TCP_WIN_SIZE) {
+				pSocket->pTCP_Control->LocalWinScale = Value;
+				pSocket->pTCP_Control->WIN_Change = 1;
+			}
+			if (Type == TCP_INIT_SN) {
+				pSocket->pTCP_Control->LocalSN = Value;
+			}
+			break;
+		}
+		default:break;
+	}
+}
+
+
 
 
 

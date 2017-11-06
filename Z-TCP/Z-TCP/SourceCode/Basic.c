@@ -7,6 +7,14 @@
 
 /*2017--05--15--15--35--08(ZJYC): 着手构建CRC校验树   */
 
+void Delay(uint32_t Len) {
+	uint32_t i = 0;
+	while (Len--) {
+		i = 100000;
+		while (i--);
+	}
+}
+
 /* 必须确保为网络字序，内部会自行转换为主机字序 */
 static uint16_t prv_GetCheckSum(uint16_t * PseudoHeader, uint16_t PseudoLenBytes, uint16_t*Data, uint32_t DataLenBytes)
 {
@@ -135,6 +143,91 @@ void FillCheckSum(IP_Header * pIP_Header)
 	Temp = prvIP_GetCheckSum(pIP_Header);
 	pIP_Header->CheckSum = DIY_htons(Temp);
 }
+/* input '192.168.0.1' -> {192,168,0,1} */
+IP IP_Str2Int(const char * Str)
+{
+	uint8_t i = 0, temp[3] = {0},t = 0,m = 0;
+	uint32_t ip = 0; IP res = {0};
+
+	uint8_t SepChar = '.';
+
+	while (1)
+	{
+		if ((Str[i] >= '0') && (Str[i] <= '9')) { temp[t++] = Str[i] - 0x30; }
+		if ((Str[i] == SepChar) || (Str[i] == 0)) {
+			if (t == 3) { ip |= (temp[2] + temp[1] * 10 + temp[0] * 100) << m * 8; }
+			if (t == 2) { ip |= (temp[0] * 10 + temp[1]) << m * 8; }
+			if (t == 1) { ip |= (temp[0]) << m * 8; }
+			m++; t = 0;
+		}
+		if (Str[i] == 0)break;
+		i++;
+	}
+	res.U32 = ip;
+	return res;
+}
+
+uint8_t prvUppercase(uint8_t input)
+{
+	if ((input >= 97) && (input <= 122)) {
+		return input - 'a' + 'A';
+	}
+	return input;
+}
+
+uint8_t prvLowercase(uint8_t input)
+{
+	if ((input >= 65) && (input <= 90)) {
+		return input - 'A' + 'a';
+	}
+	return input;
+}
+
+uint8_t prvIsMacChar(uint8_t input)
+{
+	return ((input >= 65) && (input <= 90)) || \
+		((input >= 97) && (input <= 122)) || \
+		((input >= 48) && (input <= 57));
+}
+
+uint8_t prvGetNum(uint8_t input)
+{
+	if ((input >= 48) && (input <= 57)) {
+		return input - 48;
+	}
+	if ((input >= 65) && (input <= 90)) {
+		return input - 'A' + 0x0A;
+	}
+	if ((input >= 97) && (input <= 122)) {
+		return input - 'a' + 0x0A;
+	}
+	return input;
+}
+
+/* input 'AA:BB:CC:DD:EE:FF' ->{0xaa,0xbb,0xcc,0xdd,0xee,0xff} */
+MAC MAC_Str2Int(const char * Str)
+{
+	MAC res = { 0 };
+	uint8_t i = 0, temp[2] = { 0 },t = 0,m = 0;
+
+	uint8_t SepChar = ':';
+
+	while (1)
+	{
+		if (prvIsMacChar(Str[i])) { temp[t++] = prvGetNum(Str[i]); }
+		if ((Str[i] == SepChar) || (Str[i] == 0)) {
+			if (t == 2) { t = temp[0] << 4 | temp[1]; }
+			if (t == 1) { t = temp[0]; }
+			res.Byte[m] = t;
+			m++; t = 0;
+		}
+		if (Str[i] == 0)break;
+		i++;
+	}
+	return res;
+}
+
+
 
 
 

@@ -10,8 +10,18 @@ ARP_Cache * pARP_Cache = 0x00;
 void ARP_Init(void)
 {
 	uint8_t i;
+	ADDR Address = { 0 };
+
 	pARP_Cache = (ARP_Cache*)MM_Ops.Malloc(sizeof(ARP_Cache) * ARP_CACHE_CAPACITY);
 	if (pARP_Cache != NULL)memset((uint8_t*)pARP_Cache,0x00, sizeof(ARP_Cache) * ARP_CACHE_CAPACITY);
+
+	Address.RemoteIP = IP_Str2Int("192.168.120.1");
+	Address.RemoteMAC = MAC_Str2Int("11:22:33:44:55:66");
+	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
+
+	Address.RemoteIP = IP_Str2Int("255.255.255.255");
+	Address.RemoteMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
+	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
 }
 
 uint8_t ARP_GetIP_ByMAC(MAC * mac,IP * ip, uint8_t * IndexOfCache)
@@ -185,6 +195,19 @@ void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
 		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
 	}
+}
+
+RES ARP_IsIpExisted(IP * ip,uint32_t Timeout) {
+	MAC mac = { 0 };
+
+	if (ARP_GetMAC_ByIP(&ip, &mac, 0, 1) == ARP_False) {
+		while (Timeout--) {
+			Delay(1);
+			if (ARP_GetMAC_ByIP(&ip, &mac, 0, 0) == ARP_True)return RES_True;
+		}
+		return RES_False;
+	}
+	return RES_True;
 }
 
 uint8_t DebugBuff1[] = 

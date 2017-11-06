@@ -54,14 +54,14 @@ typedef struct IP_Header_
 }IP_Header;
 #pragma pack ()
 
-extern MAC LocalMAC;
 extern IP  LocalIP;
-extern MAC BrocastMAC;
+extern IP  BrocastIP;
 extern MAC ZeroMAC;
 
 void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP, uint8_t Protocol);
 uint32_t IP_GetOptionSize(void);
+void IP_Init(void);
 #ifdef __cplusplus
 }
 #endif

@@ -60,6 +60,8 @@ void ARP_TickTask(void);
 void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void ARP_SendRequest(IP * TargetIP);
 void ARP_Test(void);
+RES ARP_IsIpExisted(IP * ip, uint32_t Timeout);
+
 #ifdef __cplusplus
 }
 #endif
