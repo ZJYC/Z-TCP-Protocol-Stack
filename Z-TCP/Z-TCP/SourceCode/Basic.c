@@ -3,6 +3,7 @@
 #include "IP.h"
 #include "TCP.h"
 #include "UDP.h"
+#include "ICMP.h"
 #include "Ethernet.h"
 
 /*2017--05--15--15--35--08(ZJYC): 着手构建CRC校验树   */
@@ -101,7 +102,20 @@ static uint16_t prvIP_GetCheckSum(IP_Header * pIP_Header)
 
 	return cksum;
 }
-/* 校验IP层及以上，目前只有TCP/UDP */
+
+static uint16_t prvICMP_GetCheckSum(IP_Header * pIP_Header) {
+	ICMP_Header * pICMP_Header = (ICMP_Header*)&pIP_Header->Buff;
+	uint32_t PayloadLen = DIY_ntohs(pIP_Header->TotalLen) - IP_HeaderLen;
+	uint8_t * Buff = &pICMP_Header->Type;
+	uint16_t Checksum = 0;
+	pICMP_Header->Checksum = 0x00;
+
+	Checksum = prv_GetCheckSum(0,0, Buff, PayloadLen);
+
+	return Checksum;
+}
+
+/* 校验IP层及以上，目前只有TCP/UDP/ICMP */
 RES IsCheckSumRight(IP_Header * pIP_Header)
 {
 	uint16_t Temp = 0;
@@ -119,6 +133,11 @@ RES IsCheckSumRight(IP_Header * pIP_Header)
 			UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
 			Temp = DIY_htons(pUDP_Header->CheckSum);
 			if (Temp == prvUDP_ChecksumCalculate(pIP_Header))return RES_True;
+		}
+		if (pIP_Header->Protocol == IP_Protocol_ICMP) {
+			ICMP_Header * pICMP_Header = (ICMP_Header*)&pIP_Header->Buff;
+			Temp = DIY_htons(pICMP_Header->Checksum);
+			if (Temp == prvICMP_GetCheckSum(pIP_Header))return RES_True;
 		}
 	}
 	return RES_False;
@@ -139,6 +158,11 @@ void FillCheckSum(IP_Header * pIP_Header)
 		UDP_Header * pUDP_Header = (UDP_Header*)&pIP_Header->Buff;
 		Temp = prvUDP_ChecksumCalculate(pIP_Header); DIY_htons(pUDP_Header->CheckSum);
 		pUDP_Header->CheckSum = DIY_htons(Temp);
+	}
+	if (pIP_Header->Protocol == IP_Protocol_ICMP) {
+		ICMP_Header * pICMP_Header = (ICMP_Header*)&pIP_Header->Buff;
+		Temp = prvICMP_GetCheckSum(pIP_Header);
+		pICMP_Header->Checksum = DIY_htons(Temp);
 	}
 	Temp = prvIP_GetCheckSum(pIP_Header);
 	pIP_Header->CheckSum = DIY_htons(Temp);

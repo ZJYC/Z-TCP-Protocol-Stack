@@ -57,9 +57,10 @@ typedef struct IP_Header_
 extern IP  LocalIP;
 extern IP  BrocastIP;
 extern MAC ZeroMAC;
+extern IP  GatewayIP;
 
 void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
-void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP, uint8_t Protocol);
+void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP, uint8_t Protocol, uint32_t IpDataLen);
 uint32_t IP_GetOptionSize(void);
 void IP_Init(void);
 #ifdef __cplusplus

@@ -57,6 +57,9 @@
     <ClInclude Include="SourceCode\DHCP.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\ICMP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceCode\ARP.c">
@@ -96,6 +99,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SourceCode\DHCP.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCode\ICMP.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

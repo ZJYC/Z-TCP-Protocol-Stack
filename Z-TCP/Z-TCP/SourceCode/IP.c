@@ -14,6 +14,7 @@
 */
 
 IP  LocalIP = {0};
+IP  GatewayIP = { 0 };
 MAC ZeroMAC = {0x00,0x00, 0x00, 0x00, 0x00, 0x00};
 IP  BrocastIP = {0};
 
@@ -24,6 +25,7 @@ static uint16_t prvIP_GetIdentify(void)
 
 void IP_Init(void) {
 	LocalIP = IP_Str2Int("0.0.0.0");
+	GatewayIP = IP_Str2Int("0.0.0.0");
 	BrocastIP = IP_Str2Int("255.255.255.255");
 }
 
@@ -82,7 +84,10 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 		}
 		switch (pIP_Header->Protocol)
 		{
-			case IP_Protocol_ICMP:/*ICMP_ProcessPacket(pNeteworkBuff); */break;
+		case IP_Protocol_ICMP: {/* 目前只能相应PING */
+			ICMP_ProcessPacket(pNeteorkBuff);
+			break;
+		}
 			case IP_Protocol_IGMP:/*IGMP_ProcessPacket(pNeteworkBuff); */break;
 			case IP_Protocol_TCP:
 			{
@@ -148,5 +153,9 @@ void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protoc
 uint32_t IP_GetOptionSize(void)
 {
 	return 0;
+}
+
+uint32_t IP_GetPacketSize(uint32_t DataSize) {
+	return EthernetHeaderLen + IP_HeaderLen + IP_GetOptionSize() + DataSize;
 }
 

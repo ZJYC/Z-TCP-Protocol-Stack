@@ -13,4 +13,9 @@ pkt+=LLayer12/BOOTP(chaddr="123456",xid=0)/DHCP(options=[("message-type","discov
                                     ("client_id","ZJYC"),"end"])
 pkt+=LLayer21/BOOTP(yiaddr="1.2.3.4",xid=0,chaddr="123456",op="BOOTREPLY")/DHCP(options=[("message-type","offer"),\
 				    ("server_id","192.168.120.1"),"end"])
+pkt+=LLayer12/BOOTP(xid=0,chaddr="123456",op="BOOTREQUEST")/DHCP(options=[("message-type","request"),\
+				    ("server_id","192.168.120.1"),("requested_addr","1.2.3.4"),\
+                                    ("client_id","ZJYC_ZJYC"),("lease_time",100),"end"])
+pkt+=LLayer21/BOOTP(yiaddr="1.2.3.4",xid=0,chaddr="123456",op="BOOTREPLY")/DHCP(options=[("message-type","ack"),\
+				    ("lease_time",100),("server_id","192.168.120.1"),"end"])
 wrpcap("DHCP.pcap",pkt)

@@ -5,36 +5,16 @@
 #include "Basic.h"
 #include "TCP_Task.h"
 
-/*
-关于网络缓存中的Len属性
-暂定：发送时逐级增加。接收时逐级减少
-我们假设硬件自动计算以太网的CRC以及前导字段
-何时动用字序（数据类型转换，非原子操作）
-*/
-
-uint8_t DebugBuff[2048] = { 0x00 };
-
 MAC LocalMAC = { 0 };
-MAC BrocastMAC = { 0xFF,0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-
+MAC BrocastMAC = {0};
+/* 在使用任何以太网功能之前调用 */
 void Ethernet_Init(void) {
 	LocalMAC = MAC_Str2Int("1:1:1:1:1:1");
+	BrocastMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
 }
-
-/*
-****************************************************
-*  Function       : EthernetDeriverSend
-*  Description    : ethernet lowest layer send data
-*  Params         : pointer of pNeteorkBuff
-*  Return         : Reserved
-*  Author         : -5A4A5943-
-*  History        :
-*****************************************************
-*/
+/* 硬件发送数据 */
 static void PHY_Ethernet_DriverSend(uint8_t * Data,uint32_t Len)
 {
-	//memset(DebugBuff, 0x00, Len);
-	//memcpy(DebugBuff, Data, Len);
 	uint16_t i = 0;
 	printf("\r\n");
 	for (i = 0; i < Len; i++)
@@ -44,7 +24,7 @@ static void PHY_Ethernet_DriverSend(uint8_t * Data,uint32_t Len)
 	}
 	printf("\r\n");
 }
-
+/* 硬件接收数据 */
 static void PHY_Ethernet_DriverRecv(uint8_t * Data,uint32_t Len)
 {
 	NeteworkBuff * pNeteworkBuff = Network_New(NetworkBuffDirRx, Len);
@@ -52,13 +32,20 @@ static void PHY_Ethernet_DriverRecv(uint8_t * Data,uint32_t Len)
 	pNeteworkBuff->Ready = True;
 	tcb.Ethernet_Rx_Packet += 1;
 }
-
+/* 通过文件想协议栈输入模拟数据 */
+void Ethernet_RecvNetworkBuff(uint8_t * Data, uint32_t Len)
+{
+	NeteworkBuff * pNeteworkBuff = Network_New(NetworkBuffDirRx, Len);
+	memcpy(&pNeteworkBuff->Buff, Data, Len);
+	Ethernet_ReceivePacket(pNeteworkBuff);
+}
+/* 调用硬件接口来发送网络缓存 */
 void Ethernet_SendNetworkBuff(NeteworkBuff * pNeteorkBuff)
 {
 	if (pNeteorkBuff == NULL)return;
 	PHY_Ethernet_DriverSend((uint8_t*)&pNeteorkBuff->Buff, pNeteorkBuff->BuffLen);
 }
-
+/* 将网络缓存标记为可发送状态 */
 void Ethernet_TransmitPacket(NeteworkBuff * pNeteorkBuff)
 {
 	/* Has already add to header TX,But the ready flag is not true,Now set it to true */
@@ -66,7 +53,13 @@ void Ethernet_TransmitPacket(NeteworkBuff * pNeteorkBuff)
 	pNeteorkBuff->Ready = True;
 	tcb.Ethernet_Tx_Packet += 1;
 }
-
+void Ethernet_ReceivePacket(NeteworkBuff * pNeteorkBuff)
+{
+	if (pNeteorkBuff == NULL)return;
+	pNeteorkBuff->Ready = True;
+	tcb.Ethernet_Rx_Packet += 1;
+}
+/* 处理以太网数据包 */
 void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 {
 	Ethernet_Header * pEth_Header = 0x00; 
@@ -87,16 +80,16 @@ void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 		}
 	}
 }
-
+/* 以太网层过滤 */
 static RES prvEthernetFilter(NeteworkBuff * pNeteorkBuff)
 {
 	Ethernet_Header * pEth_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
-
+	/* 目标是本机MAC？？ */
 	if (memcmp((uint8_t*)&pEth_Header->DstMAC,(uint8_t*)&LocalMAC,sizeof(MAC)) == 0)
 	{
 		return RES_EthernetPacketPass;
 	}
-	else
+	else/* 广播MAC？？ */
 	if (memcmp((uint8_t*)&pEth_Header->DstMAC, (uint8_t*)&BrocastMAC, sizeof(MAC)) == 0)
 	{
 		return RES_EthernetPacketPass;
@@ -107,12 +100,12 @@ static RES prvEthernetFilter(NeteworkBuff * pNeteorkBuff)
 	}
 	return RES_EthernetPacketDeny;
 }
-
+/* 填充以太网包 */
 void Ethernet_FillPacket(NeteworkBuff * pNeteorkBuff, uint32_t Protocol, IP * RemoteIP)
 {
 	MAC DstMAC = { 0x00 };
 	Ethernet_Header * pEthernet_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
-
+	/* 尝试获取本IP对应的MAC地址，否则发送ARP请求 */
 	ARP_GetMAC_ByIP(RemoteIP, &DstMAC, NULL,1);
 	pEthernet_Header->SrcMAC = LocalMAC;
 	pEthernet_Header->DstMAC = DstMAC;

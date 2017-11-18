@@ -4,6 +4,9 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+#include <windows.h>
+
 #include "DataTypeDef.h"
 #include "Basic.h"
 
@@ -20,6 +23,7 @@ extern "C" {
 #define DHCP_INIT	(1)
 #define DHCP_SELECTING	(2)
 #define DHCP_REQUES	(3)
+#define DHCP_PREBOUND (7)
 #define DHCP_BOUND	(4)
 #define DHCP_RENEW	(5)
 #define DHCP_REBIND	(6)
@@ -88,9 +92,9 @@ extern "C" {
 	}DHCP_CB_;
 
 	void DHCP_Init();
-	void DHCP_MainLoop();
+	DWORD  WINAPI DHCP_MainTask(LPVOID lpParam);
 	void DHCP_Test();
-	
+#define DHCP_Delay		Sleep
 
 
 #ifdef __cplusplus

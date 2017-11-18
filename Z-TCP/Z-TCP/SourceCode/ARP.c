@@ -5,6 +5,9 @@
 #include "Ethernet.h"
 #include "heap_5.h"
 
+static void prvARP_PrintfIP(IP * ip);
+static void prvARP_PrintfMAC(MAC * mac);
+
 ARP_Cache * pARP_Cache = 0x00;
 
 void ARP_Init(void)
@@ -14,11 +17,11 @@ void ARP_Init(void)
 
 	pARP_Cache = (ARP_Cache*)MM_Ops.Malloc(sizeof(ARP_Cache) * ARP_CACHE_CAPACITY);
 	if (pARP_Cache != NULL)memset((uint8_t*)pARP_Cache,0x00, sizeof(ARP_Cache) * ARP_CACHE_CAPACITY);
-
+	/*  */
 	Address.RemoteIP = IP_Str2Int("192.168.120.1");
 	Address.RemoteMAC = MAC_Str2Int("11:22:33:44:55:66");
 	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
-
+	/* 预先装入广播MAC和IP */
 	Address.RemoteIP = IP_Str2Int("255.255.255.255");
 	Address.RemoteMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
 	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
@@ -187,6 +190,7 @@ void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 	{
 		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
 		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
+		prvARP_PrintfIP(&ip); printf(" @ "); prvARP_PrintfMAC(&pARP_Header->SrcMAC); printf("\r\n");
 		ip.U32 = DIY_ntohl(pARP_Header->DstIP.U32);
 		if(ip.U32 == LocalIP.U32)ARP_SendRespon(pNeteorkBuff);
 	}
@@ -200,10 +204,10 @@ void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 RES ARP_IsIpExisted(IP * ip,uint32_t Timeout) {
 	MAC mac = { 0 };
 
-	if (ARP_GetMAC_ByIP(&ip, &mac, 0, 1) == ARP_False) {
+	if (ARP_GetMAC_ByIP(ip, &mac, 0, 1) == ARP_False) {
 		while (Timeout--) {
 			Delay(1);
-			if (ARP_GetMAC_ByIP(&ip, &mac, 0, 0) == ARP_True)return RES_True;
+			if (ARP_GetMAC_ByIP(ip, &mac, 0, 0) == ARP_True)return RES_True;
 		}
 		return RES_False;
 	}
@@ -269,7 +273,8 @@ static void prvARP_PrintfMAC(MAC * mac)
 	uint8_t i = 0;
 	for (i = 0; i < 6; i++)
 	{
-		printf("%02X ", mac->Byte[i]);
+		printf("%02X", mac->Byte[i]);
+		if (i != 5)printf(":");
 	}
 }
 
@@ -278,7 +283,8 @@ static void prvARP_PrintfIP(IP * ip)
 	int8_t i = 0;
 	for (i = 3; i >= 0; i--)
 	{
-		printf("%X ", ip->U8[i]);
+		printf("%d", ip->U8[i]);
+		if (i)printf(".");
 	}
 }
 
@@ -296,8 +302,7 @@ void ARP_PrintTable(void)
 		}
 	}
 }
-
-void ARP_Test(void)
+/*void ARP_Test(void)
 {
 	uint8_t i = 0; IP ip = { 0,9,8,7 };
 
@@ -311,4 +316,5 @@ void ARP_Test(void)
 	ARP_SendRequest(&ip);
 	MainLoop();
 }
+*/
 

@@ -1,17 +1,7 @@
-﻿  DHCP.c
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(64): warning C4013: “prvDHCP_GetRandom”未定义；假设外部返回 int
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(108): warning C4013: “prvDHCP_ProcessOptions”未定义；假设外部返回 int
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(109): warning C4013: “ARP_IsIpExisted”未定义；假设外部返回 int
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(207): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[2]”的间接级别不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(207): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(208): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(208): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(215): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(215): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(223): warning C4033: “prvDHCP_GenerateOption”必须返回值
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(235): warning C4142: 类型的良性重定义
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(308): warning C4133: “函数”: 从“unsigned int *”到“IP *”的类型不兼容
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(346): warning C4305: “初始化”: 从“int”到“unsigned char”截断
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(389): warning C4013: “MainLoop”未定义；假设外部返回 int
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\dhcp.c(391): warning C4133: “函数”: 从“unsigned char [301]”到“NeteworkBuff *”的类型不兼容
+﻿  ARP.c
+d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\arp.c(15): warning C4101: “i”: 未引用的局部变量
+d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\arp.c(68): warning C4047: “!=”:“int”与“void *”的间接级别不同
+d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\arp.c(76): warning C4133: “函数”: 从“MAC *”到“IP *”的类型不兼容
+d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\arp.c(76): warning C4047: “函数”:“unsigned char”与“void *”的间接级别不同
+d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\arp.c(76): warning C4024: “ARP_GetMAC_ByIP”: 形参和实参 4 的类型不同
   Z-TCP.vcxproj -> D:\Github-ZJYC\Z-TCP-Protocol-Stack-master\Z-TCP\Debug\Z-TCP.exe

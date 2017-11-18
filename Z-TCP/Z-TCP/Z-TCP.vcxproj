@@ -74,6 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalOptions> /D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -125,6 +126,7 @@
     <ClInclude Include="SourceCode\DHCP.h" />
     <ClInclude Include="SourceCode\Ethernet.h" />
     <ClInclude Include="SourceCode\heap_5.h" />
+    <ClInclude Include="SourceCode\ICMP.h" />
     <ClInclude Include="SourceCode\IP.h" />
     <ClInclude Include="SourceCode\NetworkBuff.h" />
     <ClInclude Include="SourceCode\Socket.h" />
@@ -139,6 +141,7 @@
     <ClCompile Include="SourceCode\DHCP.c" />
     <ClCompile Include="SourceCode\Ethernet.c" />
     <ClCompile Include="SourceCode\heap_5.c" />
+    <ClCompile Include="SourceCode\ICMP.c" />
     <ClCompile Include="SourceCode\IP.c" />
     <ClCompile Include="SourceCode\Main.cpp" />
     <ClCompile Include="SourceCode\NetworkBuff.c" />
