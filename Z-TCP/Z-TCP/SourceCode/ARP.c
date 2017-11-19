@@ -1,12 +1,11 @@
 
+#include <stdio.h>
+#include <windows.h>
 
 #include "ARP.h"
 #include "IP.h"
 #include "Ethernet.h"
 #include "heap_5.h"
-
-static void prvARP_PrintfIP(IP * ip);
-static void prvARP_PrintfMAC(MAC * mac);
 
 ARP_Cache * pARP_Cache = 0x00;
 
@@ -20,11 +19,11 @@ void ARP_Init(void)
 	/*  */
 	Address.RemoteIP = IP_Str2Int("192.168.120.1");
 	Address.RemoteMAC = MAC_Str2Int("11:22:33:44:55:66");
-	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
+	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC, ARP_TTL_MAX);
 	/* 预先装入广播MAC和IP */
-	Address.RemoteIP = IP_Str2Int("255.255.255.255");
-	Address.RemoteMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
-	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC);
+	Address.RemoteIP = BrocastIP;
+	Address.RemoteMAC = BrocastMAC;
+	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC, ARP_TTL_MAX);
 }
 
 uint8_t ARP_GetIP_ByMAC(MAC * mac,IP * ip, uint8_t * IndexOfCache)
@@ -69,13 +68,13 @@ uint8_t ARP_GetMAC_ByIP(IP * ip, MAC * mac, uint8_t * IndexOfCache, uint8_t Send
 	return ARP_False;
 }
 
-void ARP_AddItem(IP * ip, MAC * mac)
+void ARP_AddItem(IP * ip, MAC * mac,uint8_t TTL)
 {
 	uint8_t IndexOfCache = 0,i;
 
 	if (ARP_GetMAC_ByIP(mac, NULL, &IndexOfCache,NULL) == ARP_True)
 	{
-		pARP_Cache[IndexOfCache].TTL = ARP_TTL_MAX;
+		pARP_Cache[IndexOfCache].TTL = pARP_Cache[IndexOfCache].TTL_;
 	}
 	else
 	{
@@ -86,29 +85,8 @@ void ARP_AddItem(IP * ip, MAC * mac)
 				pARP_Cache[i].Used = ARP_True;
 				memcpy((uint8_t*)&pARP_Cache[i].IP, ip, sizeof(IP));
 				memcpy((uint8_t*)&pARP_Cache[i].MAC, mac, sizeof(MAC));
-				pARP_Cache[i].TTL = ARP_TTL_MAX;
+				pARP_Cache[i].TTL = pARP_Cache[IndexOfCache].TTL_ = TTL;
 				return;
-			}
-		}
-	}
-}
-
-void ARP_TickTask(void)
-{
-	uint8_t i;
-	for (i = 0; i < ARP_CACHE_CAPACITY; i++)
-	{
-		if (pARP_Cache[i].Used == ARP_True)
-		{
-			pARP_Cache[i].TTL -= 1;
-			if (pARP_Cache[i].TTL <= 0)
-			{
-				pARP_Cache[i].Used = ARP_False;
-			}
-			/* TTL较少到一半时自动发送ARP请求 */
-			if (pARP_Cache[i].TTL <= ARP_TTL_MAX / 2)
-			{
-				ARP_SendRequest(&pARP_Cache[i].IP);
 			}
 		}
 	}
@@ -189,102 +167,54 @@ void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 	if (DIY_ntohs(pARP_Header->Opcode) == ARP_OpcodeRequest)
 	{
 		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
-		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
-		prvARP_PrintfIP(&ip); printf(" @ "); prvARP_PrintfMAC(&pARP_Header->SrcMAC); printf("\r\n");
+		ARP_AddItem(&ip, &pARP_Header->SrcMAC, ARP_TTL_MAX);
+		PrintfIP(&ip); printf(" @ "); PrintfMAC(&pARP_Header->SrcMAC); printf("\r\n");
 		ip.U32 = DIY_ntohl(pARP_Header->DstIP.U32);
 		if(ip.U32 == LocalIP.U32)ARP_SendRespon(pNeteorkBuff);
 	}
 	if (DIY_ntohs(pARP_Header->Opcode) == ARP_OpcodeRespond)
 	{
 		ip.U32 = DIY_ntohl(pARP_Header->SrcIP.U32);
-		ARP_AddItem(&ip, &pARP_Header->SrcMAC);
+		ARP_AddItem(&ip, &pARP_Header->SrcMAC, ARP_TTL_MAX);
 	}
 }
 
 RES ARP_IsIpExisted(IP * ip,uint32_t Timeout) {
 	MAC mac = { 0 };
+	ADDR Address = { 0 };
+	Address.RemoteIP = *ip;
+	Address.RemoteMAC = MAC_Str2Int("0:0:0:0:0:0");
+	ARP_AddItem(&Address.RemoteIP, &Address.RemoteMAC,1);/* 下一秒会发出ARP请求报文 */
+	Sleep(Timeout * 1000);
+	if (ARP_GetMAC_ByIP(ip, &mac, 0, 0) == ARP_True)return RES_True;
+	return RES_False;
+}
 
-	if (ARP_GetMAC_ByIP(ip, &mac, 0, 1) == ARP_False) {
-		while (Timeout--) {
-			Delay(1);
-			if (ARP_GetMAC_ByIP(ip, &mac, 0, 0) == ARP_True)return RES_True;
+DWORD WINAPI ARP_Task(LPVOID lpParam) {
+	while (1) {
+		uint8_t i;
+		for (i = 0; i < ARP_CACHE_CAPACITY; i++)
+		{
+			if (pARP_Cache[i].Used == ARP_True)
+			{
+				pARP_Cache[i].TTL -= 1;
+				if (pARP_Cache[i].TTL <= 0)
+				{
+					pARP_Cache[i].Used = ARP_False;
+				}
+				/* TTL较少到一半时自动发送ARP请求 */
+				if (pARP_Cache[i].TTL <= ARP_TTL_MAX / 2)
+				{
+					ARP_SendRequest(&pARP_Cache[i].IP);
+				}
+				/* 广播地址很特殊 */
+				if (pARP_Cache[i].IP.U32 == BrocastIP.U32)
+				{
+					pARP_Cache[i].TTL = pARP_Cache[i].TTL_;
+				}
+			}
 		}
-		return RES_False;
-	}
-	return RES_True;
-}
-
-uint8_t DebugBuff1[] = 
-{
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	0x2a,
-	0xff,0xff,0xff,0xff,0xff,0xff,0x01,0x02,
-	0x03,0x04,0x05,0x06,0x08,0x06,0x00,0x01,
-	0x08,0x00,0x06,0x04,0x00,0x01,0x01,0x02,
-	0x03,0x04,0x05,0x06,0x01,0x02,0x03,0x04,
-	0x00,0x00,0x00,0x00,0x00,0x00,0x07,0x08,
-	0x09,0x00,
-};
-uint8_t DebugBuff2[] =
-{
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	0x2a,
-	0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
-	0x09,0x0a,0x0b,0x0c,0x08,0x06,0x00,0x01,
-	0x08,0x00,0x06,0x04,0x00,0x02,0x07,0x08,
-	0x09,0x0a,0x0b,0x0c,0x07,0x08,0x09,0x00,
-	0x01,0x02,0x03,0x04,0x05,0x06,0x01,0x02,
-	0x03,0x04,
-
-};
-uint8_t DebugBuff3[] =
-{
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	0x2a,
-	0xff,0xff,0xff,0xff,0xff,0xff,0x07,0x08,
-	0x09,0x0a,0x0b,0x0c,0x08,0x06,0x00,0x01,
-	0x08,0x00,0x06,0x04,0x00,0x01,0x07,0x08,
-	0x09,0x0a,0x0b,0x0c,0x07,0x08,0x09,0x00,
-	0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x02,
-	0x03,0x04,
-};
-uint8_t DebugBuff4[] =
-{
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	0x2a,
-	0x07,0x08,0x09,0x0a,0x0b,0x0c,0x01,0x02,
-	0x03,0x04,0x05,0x06,0x08,0x06,0x00,0x01,
-	0x08,0x00,0x06,0x04,0x00,0x02,0x01,0x02,
-	0x03,0x04,0x05,0x06,0x01,0x02,0x03,0x04,
-	0x07,0x08,0x09,0x0a,0x0b,0x0c,0x07,0x08,
-	0x09,0x00,
-};
-
-NeteworkBuff * pNeteorkBuff[] = 
-{
-	(NeteworkBuff*)DebugBuff1,
-	(NeteworkBuff*)DebugBuff2,
-	(NeteworkBuff*)DebugBuff3,
-	(NeteworkBuff*)DebugBuff4,
-};
-
-static void prvARP_PrintfMAC(MAC * mac)
-{
-	uint8_t i = 0;
-	for (i = 0; i < 6; i++)
-	{
-		printf("%02X", mac->Byte[i]);
-		if (i != 5)printf(":");
-	}
-}
-
-static void prvARP_PrintfIP(IP * ip)
-{
-	int8_t i = 0;
-	for (i = 3; i >= 0; i--)
-	{
-		printf("%d", ip->U8[i]);
-		if (i)printf(".");
+		Sleep(1000);
 	}
 }
 
@@ -295,26 +225,12 @@ void ARP_PrintTable(void)
 	{
 		if (pARP_Cache[i].Used == ARP_True)
 		{
-			prvARP_PrintfIP(&pARP_Cache[i].IP);
+			PrintfIP(&pARP_Cache[i].IP);
 			printf("    @    ");
-			prvARP_PrintfMAC(&pARP_Cache[i].MAC);
+			PrintfMAC(&pARP_Cache[i].MAC);
 			printf("\r\n");
 		}
 	}
 }
-/*void ARP_Test(void)
-{
-	uint8_t i = 0; IP ip = { 0,9,8,7 };
 
-	for (i = 0; i < sizeof(pNeteorkBuff)/sizeof(pNeteorkBuff[0]); i++)
-	{
-		Ethernet_ProcessPacket(pNeteorkBuff[i]);
-		MainLoop();
-		ARP_PrintTable();
-	}
-
-	ARP_SendRequest(&ip);
-	MainLoop();
-}
-*/
 

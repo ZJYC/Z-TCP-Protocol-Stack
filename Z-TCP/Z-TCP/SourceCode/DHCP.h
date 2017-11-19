@@ -10,8 +10,8 @@ extern "C" {
 #include "DataTypeDef.h"
 #include "Basic.h"
 
-#define DHCP_SERVER_PORT	(68)
-#define DHCP_CLIENT_PORT	(67)
+#define DHCP_SERVER_PORT	(67)
+#define DHCP_CLIENT_PORT	(68)
 #define ConstOptionHead	99,130,83,99
 #define oplen_4n	'*'
 #define oplen_8n	'&'
@@ -22,6 +22,7 @@ extern "C" {
 
 #define DHCP_INIT	(1)
 #define DHCP_SELECTING	(2)
+#define DHCP_CHECKIP	(8)/* 需要检查服务器提供的IP是否被其他人使用 */
 #define DHCP_REQUES	(3)
 #define DHCP_PREBOUND (7)
 #define DHCP_BOUND	(4)

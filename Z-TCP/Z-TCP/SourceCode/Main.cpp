@@ -15,19 +15,25 @@
 
 void Init(void){
 	Network_Init();
-	ARP_Init();
 	Ethernet_Init();
 	IP_Init();
+	ARP_Init();
 	DHCP_Init();
 }
 
 void CreateTask() {
-	//CreateThread(NULL,0,DHCP_MainTask,0,0,NULL);
-	//printf("Create DHCP_MainTask\r\n"); 
+	/* DHCP主任务 */
+	CreateThread(NULL,0,DHCP_MainTask,0,0,NULL);
+	printf("Create DHCP_MainTask\r\n"); 
+	/* 底层数据收发任务 */
 	CreateThread(NULL, 0, LLDataProcessLoop, 0, 0, NULL);
 	printf("Create LLDataProcessLoop\r\n"); 
+	/* 模拟数据输入任务 */
 	CreateThread(NULL, 0, SimulateDataInput, 0, 0, NULL);
 	printf("Create SimulateDataInput\r\n");
+	/* ARP 任务 */
+	CreateThread(NULL, 0, ARP_Task, 0, 0, NULL);
+	printf("Create ARP_Task\r\n");
 }
 
 int main(void)

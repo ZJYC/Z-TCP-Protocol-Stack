@@ -23,6 +23,8 @@ extern "C" {
 IP IP_Str2Int(const char * Str);
 MAC MAC_Str2Int(const char * Str);
 void Delay(uint32_t Len);
+void PrintfIP(IP * ip);
+void PrintfMAC(MAC * mac);
 
 #ifdef __cplusplus
 }

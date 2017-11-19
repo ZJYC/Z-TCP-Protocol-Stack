@@ -251,7 +251,25 @@ MAC MAC_Str2Int(const char * Str)
 	return res;
 }
 
+void PrintfMAC(MAC * mac)
+{
+	uint8_t i = 0;
+	for (i = 0; i < 6; i++)
+	{
+		printf("%02X", mac->Byte[i]);
+		if (i != 5)printf(":");
+	}
+}
 
+void PrintfIP(IP * ip)
+{
+	int8_t i = 0;
+	for (i = 3; i >= 0; i--)
+	{
+		printf("%d", ip->U8[i]);
+		if (i)printf(".");
+	}
+}
 
 
 

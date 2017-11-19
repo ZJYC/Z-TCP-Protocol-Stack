@@ -9,7 +9,7 @@ MAC LocalMAC = { 0 };
 MAC BrocastMAC = {0};
 /* 在使用任何以太网功能之前调用 */
 void Ethernet_Init(void) {
-	LocalMAC = MAC_Str2Int("1:1:1:1:1:1");
+	LocalMAC = MAC_Str2Int("00:0c:29:59:fd:21");
 	BrocastMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
 }
 /* 硬件发送数据 */
