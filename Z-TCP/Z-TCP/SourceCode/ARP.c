@@ -68,7 +68,7 @@ uint8_t ARP_GetMAC_ByIP(IP * ip, MAC * mac, uint8_t * IndexOfCache, uint8_t Send
 	return ARP_False;
 }
 
-void ARP_AddItem(IP * ip, MAC * mac,uint8_t TTL)
+void ARP_AddItem(IP * ip, MAC * mac,uint16_t TTL)
 {
 	uint8_t IndexOfCache = 0,i;
 

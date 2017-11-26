@@ -60,6 +60,9 @@
     <ClInclude Include="SourceCode\ICMP.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\Config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceCode\ARP.c">

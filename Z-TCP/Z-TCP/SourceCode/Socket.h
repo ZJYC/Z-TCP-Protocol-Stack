@@ -13,6 +13,8 @@ extern "C" {
 #define TCP_WIN_SIZE	2
 #define TCP_WIN_SCALE	3
 #define TCP_INIT_SN		4
+#define TCP_TSOPT		5
+#define TCP_SACK		6
 
 #pragma pack (1)
 
@@ -31,6 +33,7 @@ Socket * prvSocket_New(ADDR * pADDR, uint8_t Procotol);
 void Socket_Send(Socket * pSocket, uint8_t * Data, uint32_t Len);
 Socket * Socket_GetSocketByPort(uint16_t Port);
 void Socket_Config(Socket * pSocket, uint8_t Type, uint32_t Value);
+void Socket_Connect(Socket * pSocket);
 
 #ifdef __cplusplus
 }

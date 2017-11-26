@@ -40,6 +40,7 @@ Socket * prvSocket_New(ADDR * pADDR,uint8_t Procotol)
 	//if (pADDR->RemoteIP.U32 == 0 || pADDR->RemotePort == 0)return NULL;
 	if (pADDR->LocalPort == NULL)pADDR->LocalPort = prvSocket_GetRandomPortNum();
 	pADDR->LocalIP.U32 = LocalIP.U32;
+	pADDR->LocalMAC = LocalMAC;
 
 	pSocketNew = (Socket*)MM_Ops.Malloc(sizeof(Socket));
 	if (pSocketNew == NULL)return NULL;
@@ -87,7 +88,7 @@ void Socket_Connect(Socket * pSocket)
 	if (pSocket->Procotol == IP_Protocol_TCP)
 	{
 		TCP_Control * pTCP_Control = pSocket->pTCP_Control;
-		//TCP_Connect(pTCP_Control);
+		TCP_Connect(pTCP_Control);
 	}
 }
 
@@ -111,6 +112,8 @@ void Socket_Send(Socket * pSocket, uint8_t * Data, uint32_t Len)
 	}
 	if (pSocket->Procotol == IP_Protocol_TCP)
 	{
+		/* 等待直到连接建立 */
+		while (!(pSocket->pTCP_Control->State >= TCP_STATE_ESTABLISHED));
 		TCP_SendData(pSocket->pTCP_Control,Data,Len);
 	}
 }
@@ -132,6 +135,8 @@ void Socket_Config(Socket * pSocket,uint8_t Type, uint32_t Value)
 		case TCP_WIN_SIZE:
 		case TCP_WIN_SCALE:
 		case TCP_INIT_SN:
+		case TCP_TSOPT:
+		case TCP_SACK:
 		{
 			if (Type == TCP_MSS) {
 				pSocket->pTCP_Control->LocalMSS = Value;
@@ -142,12 +147,18 @@ void Socket_Config(Socket * pSocket,uint8_t Type, uint32_t Value)
 				pSocket->pTCP_Control->LocalWinSize = Value;
 				pSocket->pTCP_Control->WIN_Change = 1;
 			}
-			if (Type == TCP_WIN_SIZE) {
+			if (Type == TCP_WIN_SCALE) {
 				pSocket->pTCP_Control->LocalWinScale = Value;
 				pSocket->pTCP_Control->WIN_Change = 1;
 			}
 			if (Type == TCP_INIT_SN) {
 				pSocket->pTCP_Control->LocalSN = Value;
+			}
+			if (Type == TCP_TSOPT) {
+				pSocket->pTCP_Control->TSOPT = Value;
+			}
+			if (Type == TCP_SACK) {
+				pSocket->pTCP_Control->LocalSACK = Value;
 			}
 			break;
 		}

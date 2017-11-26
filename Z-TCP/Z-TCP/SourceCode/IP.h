@@ -62,7 +62,7 @@ extern IP  GatewayIP;
 void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP, uint8_t Protocol, uint32_t IpDataLen);
 uint32_t IP_GetOptionSize(void);
-void IP_Init(void);
+void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP);
 #ifdef __cplusplus
 }
 #endif

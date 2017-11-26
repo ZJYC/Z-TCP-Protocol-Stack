@@ -21,15 +21,15 @@ extern "C" {
 #include "DataTypeDef.h"
 
 #define ARP_CACHE_CAPACITY	50
-#define ARP_TTL_MAX			0xff
+#define ARP_TTL_MAX			(0xffff)
 #define ARP_True			0xff
 #define ARP_False			0x00
 
 typedef struct ARP_Cache_
 {
 	uint8_t Used;
-	uint8_t TTL;
-	uint8_t TTL_;
+	uint16_t TTL;
+	uint16_t TTL_;
 	IP IP;
 	MAC MAC;
 }ARP_Cache;
@@ -61,7 +61,7 @@ uint8_t ARP_GetIP_ByMAC(MAC * mac, IP * ip, uint8_t * IndexOfCache);
 uint8_t ARP_GetMAC_ByIP(IP * ip, MAC * mac, uint8_t * IndexOfCache, uint8_t SendRequest);
 void ARP_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void ARP_SendRequest(IP * TargetIP);
-void ARP_AddItem(IP * ip, MAC * mac, uint8_t TTL);
+void ARP_AddItem(IP * ip, MAC * mac, uint16_t TTL);
 RES ARP_IsIpExisted(IP * ip, uint32_t Timeout);
 DWORD WINAPI ARP_Task(LPVOID lpParam);
 

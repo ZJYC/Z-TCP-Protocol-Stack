@@ -279,7 +279,8 @@ static void prvDHCP_FillPacket(NeteworkBuff *pNeteworkBuff) {
 	}
 	case DHCP_REQUES: {
 		pDHCP_Header->op = BOOTREQUEST;
-		pDHCP_Header->ciaddr.U32 = DIY_htonl(DHCP_CB.ciaddr.U32);
+		/* REQUEST 消息不能带ciaddr */
+		//pDHCP_Header->ciaddr.U32 = DIY_htonl(DHCP_CB.ciaddr.U32);
 		//DISCOVER use brocast...
 		prvUDP_FillPacket(pNeteworkBuff, &BrocastIP, \
 			DHCP_SERVER_PORT, DHCP_CLIENT_PORT, (uint8_t*)pDHCP_Header, \
@@ -298,14 +299,13 @@ DWORD  WINAPI DHCP_MainTask(LPVOID lpParam) {//异步任务
 	uint32_t Cnt = 0,Retry = 0;
 	while (True) 
 	{
-		/********************************重发与复位控制*******************************/
 		DHCP_Delay(100); Cnt++;
 		if (Cnt >= 100) {//如果10S内没有状态改变，就要重发或者复位
 			Retry++;
 			/* 状态回退 */
 			if (DHCP_CB.CurState == DHCP_SELECTING)DHCP_CB.CurState = DHCP_INIT;
 			if (DHCP_CB.CurState == DHCP_PREBOUND)DHCP_CB.CurState = DHCP_REQUES;
-			if (Retry >= 4) {//最多重发4次，然后复位
+			if (Retry >= 4) {/* 最多重发4次，然后复位 */
 				DHCP_CB.CurState = DHCP_INIT;
 			}
 		}

@@ -30,7 +30,7 @@ void Ethernet_SendNetworkBuff(NeteworkBuff * pNeteorkBuff);
 void Ethernet_TransmitPacket(NeteworkBuff * pNeteorkBuff);
 void Ethernet_ProcessPacket(NeteworkBuff * pNeteorkBuff);
 void Ethernet_FillPacket(NeteworkBuff * pNeteorkBuff, uint32_t Protocol, IP * RemoteIP);
-void Ethernet_Init(void);
+void Ethernet_Init(uint8_t * str_LocalMAC);
 void PHY_Ethernet_DriverRecv(uint8_t * Data, uint32_t Len);
 void Ethernet_RecvNetworkBuff(uint8_t * Data, uint32_t Len);
 void Ethernet_ReceivePacket(NeteworkBuff * pNeteorkBuff);

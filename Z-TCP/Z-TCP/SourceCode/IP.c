@@ -23,9 +23,14 @@ static uint16_t prvIP_GetIdentify(void)
 	return 1;
 }
 
-void IP_Init(void) {
+void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP) {
+#if DHCP_EN
 	LocalIP = IP_Str2Int("0.0.0.0");
 	GatewayIP = IP_Str2Int("0.0.0.0");
+#else
+	LocalIP = IP_Str2Int(str_LocalIP);
+	GatewayIP = IP_Str2Int(str_GatewayIP);
+#endif
 	BrocastIP = IP_Str2Int("255.255.255.255");
 }
 
@@ -149,7 +154,7 @@ void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protoc
 	/* ETH */
 	Ethernet_FillPacket(pNeteworkBuff, EthernetType_IP, RemoteIP);
 }
-
+/* 获取IP数据包选项的大小 这里暂时不支持 */
 uint32_t IP_GetOptionSize(void)
 {
 	return 0;

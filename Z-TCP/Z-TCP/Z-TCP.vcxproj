@@ -122,6 +122,7 @@
     <ClInclude Include="SourceCode\All.h" />
     <ClInclude Include="SourceCode\ARP.h" />
     <ClInclude Include="SourceCode\Basic.h" />
+    <ClInclude Include="SourceCode\Config.h" />
     <ClInclude Include="SourceCode\DataTypeDef.h" />
     <ClInclude Include="SourceCode\DHCP.h" />
     <ClInclude Include="SourceCode\Ethernet.h" />

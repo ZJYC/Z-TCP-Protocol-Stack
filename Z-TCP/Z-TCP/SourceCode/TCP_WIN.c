@@ -194,30 +194,31 @@ static Segment * prvTCPWin_FindMinSnNotLessThanStartFromHeader(Segment ** pSegme
 	return pSegmentMaxSn;
 }
 /* 接收一常规应答 */
-void TCPWin_AckNormal(TCP_Win * pTCP_Win,uint32_t Sn)
-{
+void TCPWin_AckNormal(TCP_Win * pTCP_Win,uint32_t Sn){
+	/* 获取等待应答链 */
 	Segment * pSegment_Wait = prvTCPWin_FindSnEndFromHeader(&pTCP_Win->pSegment_Wait, Sn);
-	if (pSegment_Wait)
-	{
+	if (pSegment_Wait){
 		prvTCPWin_DelSegmentFrom(&pTCP_Win->pSegment_Wait, pSegment_Wait);
 		prvTCPWin_DelSegment(pSegment_Wait);
 	}
 }
 /* 添加数据到窗体，以链表的形式挂在pSegment_Tx上 */
-void TCPWin_AddTxData(TCP_Win * pTCP_Win, uint8_t * Data, uint32_t Len)
-{
+uint32_t TCPWin_AddTxData(TCP_Win * pTCP_Win, uint8_t * Data, uint32_t Len){
 	Segment * pSegment = 0;
-	uint32_t SegmentLen = 0;
-	uint32_t i = 0;
-	while (Len)
-	{
+	uint32_t SegmentLen = 0,i = 0,Send = 0;
+	while (Len){
+		/* 确定一个段含有的数据量 */
 		if (Len >= pTCP_Win->MSS){SegmentLen = pTCP_Win->MSS;}
 		else { SegmentLen = Len; }
 		Len -= SegmentLen;
+		/* 添加数据到发送段链 */
 		pSegment = prvTCPWin_NewSegment((uint8_t *)(Data + i), SegmentLen, pTCP_Win->Sn + i);
-		i += SegmentLen;
 		prvTCPWin_AddSegmentToEnd(&pTCP_Win->pSegment_Tx, pSegment);
+		i += SegmentLen; pTCP_Win->TxCapacity -= SegmentLen; Send += SegmentLen;
+		/* 预计对方接收缓冲将满，返回已经发送的数据个数 */
+		if (pTCP_Win->TxCapacity <= pTCP_Win->MSS)break;
 	}
+	return Send;
 }
 /* 从头部获取数据及其长度 */
 Segment * TCPWin_GetDataLenFromSegmentHeader(Segment ** pSegmentHeader,uint8_t ** Data,uint32_t * Len)
@@ -252,6 +253,7 @@ uint32_t TCPWin_GetTotalDataLenFromHeader(Segment ** pSegmentHeader)
 /* 获取下一步要发送的数据 */
 void TCPWin_GetDataToTx(TCP_Win * pTCP_Win,uint8_t ** Data,uint32_t * Len,uint8_t Peek)
 {
+	/* SegmentWin为窗口大小 */
 	uint32_t SegmentWaitCounter = 0, SegmentWin = pTCP_Win->TxCapacity / pTCP_Win->MSS;
 	Segment * pSegment = 0;
 	if(pTCP_Win->pSegment_Wait)SegmentWaitCounter = prvTCPWin_GetCountFromHeader(&pTCP_Win->pSegment_Wait);
@@ -295,11 +297,13 @@ void TCPWin_AddRxData(TCP_Win * pTCP_Win, uint8_t * RxData, uint32_t RxLen,uint3
 	/* 创建新的段并将其保存 */
 	pSegment = prvTCPWin_NewSegment(RxData, RxLen, Sn);
 	prvTCPWin_AddSegmentToEnd(&pTCP_Win->pSegment_Rx, pSegment);
+	pTCP_Win->RxCapacity -= RxLen;
 }
 /* 获取接收剩余容量 */
 uint32_t TCPWin_GetRemainCapacity(TCP_Win * pTCP_Win)
 {
-	return pTCP_Win->RxCapacity - TCPWin_GetTotalDataLenFromHeader(&pTCP_Win->pSegment_Rx);
+	//return pTCP_Win->RxCapacity - TCPWin_GetTotalDataLenFromHeader(&pTCP_Win->pSegment_Rx);
+	return pTCP_Win->RxCapacity;
 }
 /* 查找接收缺口 */
 void TCPWin_RxHasHole(TCP_Win * pTCP_Win,uint32_t **SACK,uint32_t *SACKLen)

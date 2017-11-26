@@ -8,8 +8,8 @@
 MAC LocalMAC = { 0 };
 MAC BrocastMAC = {0};
 /* 在使用任何以太网功能之前调用 */
-void Ethernet_Init(void) {
-	LocalMAC = MAC_Str2Int("00:0c:29:59:fd:21");
+void Ethernet_Init(uint8_t * str_LocalMAC) {
+	LocalMAC = MAC_Str2Int(str_LocalMAC);
 	BrocastMAC = MAC_Str2Int("FF:FF:FF:FF:FF:FF");
 }
 /* 硬件发送数据 */
@@ -19,7 +19,7 @@ static void PHY_Ethernet_DriverSend(uint8_t * Data,uint32_t Len)
 	printf("\r\n");
 	for (i = 0; i < Len; i++)
 	{
-		if (i % 8 == 0)printf("\r\n");
+		if (i % 16 == 0)printf("\r\n");
 		printf("%02X ", Data[i]);
 	}
 	printf("\r\n");

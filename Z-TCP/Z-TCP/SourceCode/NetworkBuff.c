@@ -17,8 +17,7 @@ void Network_Init(void)
 	MM_Ops.Init(&xHeapRegions);
 }
 
-static void prvNetwork_Insert(uint8_t Direction, NeteworkBuff * Newer)
-{
+static void prvNetwork_Insert(uint8_t Direction, NeteworkBuff * Newer){
 	NeteworkBuff * Temp = 0;
 	if (Direction == NetworkBuffDirRx)Temp = &pNeteworkBuffRxHead;
 	if (Direction == NetworkBuffDirTx)Temp = &pNeteworkBuffTxHead;
@@ -26,32 +25,31 @@ static void prvNetwork_Insert(uint8_t Direction, NeteworkBuff * Newer)
 	Temp->Next = Newer;
 }
 
-static void prvNetwork_Remove(NeteworkBuff * UselessBuff)
-{
+static void prvNetwork_Remove(NeteworkBuff * UselessBuff){
 	uint8_t i = 0;
 	NeteworkBuff * Prev = 0, * Next = 0, * Mine = UselessBuff;
-	for (i = 0; i < 2; i++)
-	{
+	for (i = 0; i < 2; i++){
 		if (i % 2 == 0)Prev = &pNeteworkBuffRxHead;
 		if (i % 2 == 1)Prev = &pNeteworkBuffTxHead;
-		while (Prev->Next != NULL && Prev->Next != Mine)Prev = Prev->Next;
-		if (Prev->Next == Mine)
-		{
+
+		while (Prev->Next != NULL && Prev->Next != Mine) {
+			Prev = Prev->Next;
+		}
+		if (Prev->Next == Mine){
 			Next = Mine->Next;
 			Mine->Next = NULL;
 			Prev->Next = Next;
+			break;
 		}
 	}
 }
 
-NeteworkBuff * Network_New(uint8_t Direction,uint32_t Len)
-{
+NeteworkBuff * Network_New(uint8_t Direction,uint32_t Len){
 	uint32_t ActuallLen = Len + sizeof(NeteworkBuff);
 	NeteworkBuff * pNeteworkBuff = 0x00;
 	uint8_t * MemHeader = MM_Ops.Malloc(ActuallLen);
 
-	if (MemHeader != NULL)
-	{
+	if (MemHeader != NULL){
 		memset(MemHeader, 0x00, ActuallLen);
 		pNeteworkBuff = (NeteworkBuff*)MemHeader;
 		prvNetwork_Insert(Direction, pNeteworkBuff);

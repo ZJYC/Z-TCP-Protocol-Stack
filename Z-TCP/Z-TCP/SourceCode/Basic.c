@@ -187,7 +187,7 @@ IP IP_Str2Int(const char * Str)
 		if (Str[i] == 0)break;
 		i++;
 	}
-	res.U32 = ip;
+	res.U32 = DIY_ntohl(ip);
 	return res;
 }
 
