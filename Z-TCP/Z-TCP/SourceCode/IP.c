@@ -7,12 +7,6 @@
 #include "Socket.h"
 #include "Basic.h"
 
-/* 
-	关于数据的加入方式
-	我们只使用一个缓存<NeteorkBuffTemp>,所有的数据都在其中进行填充，数据由TCP或者是UDP层加入数据，
-	每一层只负责他们自己的属性并加入到<NeteorkBuffTemp>中
-*/
-
 IP  LocalIP = {0};
 IP  GatewayIP = { 0 };
 MAC ZeroMAC = {0x00,0x00, 0x00, 0x00, 0x00, 0x00};
@@ -24,7 +18,7 @@ static uint16_t prvIP_GetIdentify(void)
 }
 
 void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP) {
-#if DHCP_EN
+#if DHCP_EN /* 如果使能DHCP就不需要预装IP地址，会自动获取 */
 	LocalIP = IP_Str2Int("0.0.0.0");
 	GatewayIP = IP_Str2Int("0.0.0.0");
 #else
@@ -36,7 +30,7 @@ void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP) {
 
 /*
 ****************************************************
-*  Function       : IP_AllowPacket
+*  Function       : prvIP_PreProcessPacket
 *  Description    : Pre process the packet ,including checksum and Version and DstIP
 *  Params         : pIP_Header:IP header pointer
 *  Return         : 
@@ -48,8 +42,7 @@ void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP) {
 					in the future I will add some new feature.This is just a simple framework.
 *****************************************************
 */
-static RES prvIP_PreProcessPacket(IP_Header * pIP_Header)
-{
+static RES prvIP_PreProcessPacket(IP_Header * pIP_Header){
 	uint16_t Checksum = DIY_ntohs(pIP_Header->CheckSum);
 	if (IsCheckSumRight(pIP_Header) != RES_True)return IP_PacketDelete;
 	//pIP_Header->U_VL.U_VL_ALL = DIY_ntohc(pIP_Header->U_VL.U_VL_ALL);

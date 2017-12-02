@@ -1,5 +1,46 @@
-﻿  NetworkBuff.c
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\networkbuff.c(17): warning C4047: “函数”:“const HeapRegion_t *const ”与“HeapRegion_t (*)[2]”的间接级别不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\networkbuff.c(17): warning C4024: “MM_Ops”: 形参和实参 1 的类型不同
-d:\github-zjyc\z-tcp-protocol-stack-master\z-tcp\z-tcp\sourcecode\networkbuff.c(63): warning C4047: “=”:“unsigned char”与“void *”的间接级别不同
-  Z-TCP.vcxproj -> D:\Github-ZJYC\Z-TCP-Protocol-Stack-master\Z-TCP\Debug\Z-TCP.exe
+﻿生成启动时间为 2017/12/2 22:32:32。
+     1>项目“C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Z-TCP\Z-TCP.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         E:\DangerWithYou\VS2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt  /D _CRT_SECURE_NO_WARNINGS SourceCode\ARP.c SourceCode\DHCP.c
+         DHCP.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(55): warning C4013: “prvDHCP_GetRandom”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(90): warning C4013: “prvDHCP_ProcessOptions”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(209): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[2]”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(209): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(210): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(210): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(211): warning C4047: “函数”:“unsigned int”与“unsigned char [8]”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(211): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(218): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(218): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(228): warning C4033: “prvDHCP_GenerateOption”必须返回值
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(231): warning C4142: 类型的良性重定义
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(323): warning C4013: “ARP_IsIpExisted”未定义；假设外部返回 int
+         ARP.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(16): warning C4101: “i”: 未引用的局部变量
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(59): warning C4047: “!=”:“int”与“void *”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4133: “函数”: 从“MAC *”到“IP *”的类型不兼容
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4047: “函数”:“unsigned char”与“void *”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4024: “ARP_GetMAC_ByIP”: 形参和实参 4 的类型不同
+         正在生成代码...
+       Link:
+         E:\DangerWithYou\VS2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.lib" /MACHINE:X86 Debug\ARP.obj
+         Debug\Basic.obj
+         Debug\DHCP.obj
+         Debug\Ethernet.obj
+         Debug\heap_5.obj
+         Debug\ICMP.obj
+         Debug\IP.obj
+         Debug\Main.obj
+         Debug\NetworkBuff.obj
+         Debug\Socket.obj
+         Debug\TCP.obj
+         Debug\TCP_Task.obj
+         Debug\TCP_WIN.obj
+         Debug\UDP.obj
+         Z-TCP.vcxproj -> C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.exe
+     1>已完成生成项目“C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Z-TCP\Z-TCP.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:03.06
