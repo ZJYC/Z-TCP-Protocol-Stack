@@ -1,28 +1,53 @@
-﻿生成启动时间为 2017/12/2 22:32:32。
+﻿生成启动时间为 2017/12/3 10:26:38。
      1>项目“C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Z-TCP\Z-TCP.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         E:\DangerWithYou\VS2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt  /D _CRT_SECURE_NO_WARNINGS SourceCode\ARP.c SourceCode\DHCP.c
-         DHCP.c
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(55): warning C4013: “prvDHCP_GetRandom”未定义；假设外部返回 int
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(90): warning C4013: “prvDHCP_ProcessOptions”未定义；假设外部返回 int
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(209): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[2]”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(209): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(210): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(210): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(211): warning C4047: “函数”:“unsigned int”与“unsigned char [8]”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(211): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(218): warning C4047: “函数”:“unsigned int”与“unsigned char (*)[10]”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(218): warning C4024: “prvDHCP_SetSingleOption”: 形参和实参 3 的类型不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(228): warning C4033: “prvDHCP_GenerateOption”必须返回值
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(231): warning C4142: 类型的良性重定义
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\dhcp.c(323): warning C4013: “ARP_IsIpExisted”未定义；假设外部返回 int
-         ARP.c
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(16): warning C4101: “i”: 未引用的局部变量
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(59): warning C4047: “!=”:“int”与“void *”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4133: “函数”: 从“MAC *”到“IP *”的类型不兼容
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4047: “函数”:“unsigned char”与“void *”的间接级别不同
-     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\arp.c(67): warning C4024: “ARP_GetMAC_ByIP”: 形参和实参 4 的类型不同
+         E:\DangerWithYou\VS2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt  /D _CRT_SECURE_NO_WARNINGS SourceCode\Basic.c SourceCode\IP.c SourceCode\TCP.c SourceCode\UDP.c
+         UDP.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\udp.c(29): warning C4101: “PayloadLen”: 未引用的局部变量
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\udp.c(48): warning C4013: “DHCP_ProcessPacket”未定义；假设外部返回 int
+         TCP.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(108): warning C4013: “TCPWin_NewWindows”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(108): warning C4047: “=”:“TCP_Win *”与“int”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(120): warning C4013: “TCPWin_AckNormal”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(138): warning C4013: “prvGetOptionBuff”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(139): warning C4013: “prvTCP_ProcessOption”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(141): warning C4013: “prvTCP_FillPacket”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(156): warning C4033: “prvTCP_ProcessSN_ACK_Num”必须返回值
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(183): warning C4013: “TCPWin_GetDataToTx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(225): warning C4047: “==”:“unsigned int”与“void *”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(234): warning C4047: “==”:“unsigned int”与“void *”的间接级别不同
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(295): warning C4013: “prvTCP_IpPortRx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(296): warning C4013: “prvTCP_FlagsRx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(297): warning C4013: “prvTCP_SN_ACK_Rx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(298): warning C4013: “prvTCP_OptionWinsizeRx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(299): warning C4013: “prvTCP_DataRx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(300): warning C4013: “prvTCP_StateMachine”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(304): warning C4013: “prvTCP_DataTx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(305): warning C4013: “prvTCP_OptionWinsizeTx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(306): warning C4013: “prvTCP_SN_ACK_Tx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(307): warning C4013: “prvTCP_FlagsTx”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(349): warning C4554: “|”: 检查运算符优先级可能存在的错误；使用圆括号阐明优先级
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(367): warning C4554: “|”: 检查运算符优先级可能存在的错误；使用圆括号阐明优先级
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(427): warning C4133: “函数”: 从“unsigned int *”到“unsigned short *”的类型不兼容
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(438): warning C4133: “函数”: 从“unsigned int *”到“unsigned short *”的类型不兼容
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(439): warning C4013: “TCPWin_AddRxData”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(461): warning C4013: “TCPWin_RxFinished”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(464): warning C4013: “TCPWin_TxFinished”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(726): warning C4013: “TCPWin_AddTxData”未定义；假设外部返回 int
+         IP.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(47): warning C4013: “IsCheckSumRight”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(77): warning C4013: “ARP_AddItem”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(81): warning C4013: “ICMP_ProcessPacket”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(86): warning C4013: “TCP_ProcessPacket”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(138): warning C4013: “FillCheckSum”未定义；假设外部返回 int
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\ip.c(112): warning C4101: “Temp”: 未引用的局部变量
+         Basic.c
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\basic.c(102): warning C4133: “函数”: 从“unsigned char *”到“unsigned short *”的类型不兼容
          正在生成代码...
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(578): warning C4716: “prvTCP_OptionWinsizeTx”: 必须返回一个值
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(572): warning C4716: “prvTCP_DataTx”: 必须返回一个值
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(625): warning C4716: “prvTCP_SN_ACK_Tx”: 必须返回一个值
+     1>c:\users\zhaojingyangchun\documents\github\z-tcp-protocol-stack\z-tcp\z-tcp\sourcecode\tcp.c(675): warning C4715: “prvTCP_FlagsTx”: 不是所有的控件路径都返回值
        Link:
          E:\DangerWithYou\VS2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Zhaojingyangchun\Documents\GitHub\Z-TCP-Protocol-Stack\Z-TCP\Debug\Z-TCP.lib" /MACHINE:X86 Debug\ARP.obj
          Debug\Basic.obj
@@ -43,4 +68,4 @@
 
 生成成功。
 
-已用时间 00:00:03.06
+已用时间 00:00:03.96

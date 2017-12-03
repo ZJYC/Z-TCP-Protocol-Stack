@@ -43,8 +43,7 @@ void UDP_ProcessPacket(NeteworkBuff * pNeteorkBuff){
 	/* 预处理 */
 	if (UDP_PreProcessPacket(pNeteorkBuff) != RES_UDPPacketPass)return;
 	/* 下层协议 */
-	switch (DIY_ntohs(pUDP_Header->DstPort))
-	{
+	switch (DIY_ntohs(pUDP_Header->DstPort)){
 	case DHCP_CLIENT_PORT: {
 		DHCP_ProcessPacket(pNeteorkBuff);
 		break;
@@ -53,7 +52,7 @@ void UDP_ProcessPacket(NeteworkBuff * pNeteorkBuff){
 	}
 
 }
-/* 获取UDP数据包的大小 */
+/* 获取UDP数据包的大小:以太网头长度+IP头长度+IP选项长度+UDP头长度+UDP数据 */
 uint32_t UDP_GetPacketSize(uint32_t DataLen){
 	return EthernetHeaderLen + IP_HeaderLen + IP_GetOptionSize() + UDP_HEADE_LEN + DataLen;
 }

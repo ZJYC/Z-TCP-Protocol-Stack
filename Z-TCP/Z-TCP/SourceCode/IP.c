@@ -31,7 +31,7 @@ void IP_Init(uint8_t * str_LocalIP, uint8_t * str_GatewayIP) {
 /*
 ****************************************************
 *  Function       : prvIP_PreProcessPacket
-*  Description    : Pre process the packet ,including checksum and Version and DstIP
+*  Description    : 预处理IP数据包，包括校验和、版本号和目标IP
 *  Params         : pIP_Header:IP header pointer
 *  Return         : 
 					IP_PacketPass:The packet need to further process
@@ -58,7 +58,7 @@ static RES prvIP_PreProcessPacket(IP_Header * pIP_Header){
 /*
 ****************************************************
 *  Function       : IP_ProcessPacket
-*  Description    : Recv a network frame with IP protocol,This function will first check it,then give it to Upper layer.
+*  Description    : 受到带有IP协议的网络数据包，本函数首先检查本数据包，然后提交到更高层来处理
 *  Params         : pIP_Header:pointer of IP Header
 *  Return         : Reserved
 *  Author         : -5A4A5943-
@@ -67,36 +67,29 @@ static RES prvIP_PreProcessPacket(IP_Header * pIP_Header){
 					Add a tunnel to UDP procotol
 *****************************************************
 */
-void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
-{
+void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff){
 	Ethernet_Header * pEth_Header = (Ethernet_Header*)&pNeteorkBuff->Buff;
 	IP_Header * pIP_Header = (IP_Header*)&pEth_Header->Buff;
-
-	if (prvIP_PreProcessPacket(pIP_Header) == IP_PacketPass)
-	{
-		if (pIP_Header->Protocol != IP_Protocol_UDP)
-		{
+	if (prvIP_PreProcessPacket(pIP_Header) == IP_PacketPass){
+		if (pIP_Header->Protocol != IP_Protocol_UDP){
 			IP ip = {0};
 			ip.U32 = DIY_ntohl(pIP_Header->SrcIP.U32);
 			ARP_AddItem(&ip, &pEth_Header->SrcMAC);
 		}
-		switch (pIP_Header->Protocol)
-		{
+		switch (pIP_Header->Protocol){
 		case IP_Protocol_ICMP: {/* 目前只能相应PING */
 			ICMP_ProcessPacket(pNeteorkBuff);
 			break;
 		}
-			case IP_Protocol_IGMP:/*IGMP_ProcessPacket(pNeteworkBuff); */break;
-			case IP_Protocol_TCP:
-			{
-				TCP_ProcessPacket(pNeteorkBuff);
-				break;
-			}
-			case IP_Protocol_UDP:
-			{
-				UDP_ProcessPacket(pNeteorkBuff); break;
-			}
-			default:break;
+		case IP_Protocol_IGMP:/*IGMP_ProcessPacket(pNeteworkBuff); */break;
+		case IP_Protocol_TCP:{
+			TCP_ProcessPacket(pNeteorkBuff);
+			break;
+		}
+		case IP_Protocol_UDP:{
+			UDP_ProcessPacket(pNeteorkBuff); break;
+		}
+		default:break;
 		}
 	}
 }
@@ -104,7 +97,7 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 /*
 ****************************************************
 *  Function       : prvIP_FillPacket
-*  Description    : Normally,A upper layer wants to send data,This function will be called to fill most attributes of IP protocol
+*  Description    : 通常，高层协议想要发送数据，本函数负责填充大部分IP域。
 *  Params         : pSocket:pointer of Socket
 *  Return         : Reserved
 *  Author         : -5A4A5943-
@@ -113,8 +106,7 @@ void IP_ProcessPacket(NeteworkBuff * pNeteorkBuff)
 					Just a simple successful implement,Will add new feature in the future.
 *****************************************************
 */
-void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protocol,uint32_t IpDataLen)
-{
+void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protocol,uint32_t IpDataLen){
 	Ethernet_Header * pEthernet_Header = (Ethernet_Header*)&pNeteworkBuff->Buff;
 	IP_Header * pIP_Header = (IP_Header*)&pEthernet_Header->Buff;
 	MAC Temp;
@@ -148,11 +140,10 @@ void prvIP_FillPacket(NeteworkBuff * pNeteworkBuff, IP * RemoteIP,uint8_t Protoc
 	Ethernet_FillPacket(pNeteworkBuff, EthernetType_IP, RemoteIP);
 }
 /* 获取IP数据包选项的大小 这里暂时不支持 */
-uint32_t IP_GetOptionSize(void)
-{
+uint32_t IP_GetOptionSize(void){
 	return 0;
 }
-
+/* 获取IP数据包的大小：以太网头长度+IP头长度+IP选项长度+IP数据长度 */
 uint32_t IP_GetPacketSize(uint32_t DataSize) {
 	return EthernetHeaderLen + IP_HeaderLen + IP_GetOptionSize() + DataSize;
 }
